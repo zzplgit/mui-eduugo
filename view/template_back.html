@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title"></h1>
+		    <div class="mui-icon mui-pull-right">
+		    	<img class="app-share app-none" src="../images/bt-share-click2.png" />
+		    </div>
+		</header>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self;
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					if(self.subUrl){
+						createSub();
+					}
+					if(self.share){
+						doc.querySelector(".app-share").classList.remove("app-none");
+						doc.querySelector(".app-share").addEventListener("tap", function(){
+							app.share({title:"eduugo驿渡网", href:self.share.href, content:"驿渡网 - 视频择校"});
+						});
+					}
+					var title = self.title || "";
+					doc.querySelector(".mui-title").textContent = title;
+				});
+				
+				function createSub(){
+					var subUrl = self.subUrl;
+					var subpage_style = {
+						top: '64px',
+						bottom: '0px'
+					};
+					if(self.token){
+						var state = app.getState();
+						if(state.token){
+							subUrl = self.subUrl+"&token="+state.token;
+						}
+					}
+					console.info(subUrl);
+					var sub = plus.webview.create(subUrl, self.subUrl, subpage_style);
+					self.append(sub);
+					//遮罩
+					var mask = plus.nativeUI.showWaiting();
+					self.setStyle({mask:"rgba(0,0,0,0.5)"});
+					sub.onloaded=function(){
+						mask.close();
+						self.setStyle({mask:"none"});
+					};
+					
+					if(self.h5){
+						var evalJS = "mui.plusReady(function(){";
+							evalJS += "var a = document.querySelectorAll('a');";
+							evalJS += "for(var i in a){";
+								evalJS += "if(a[i].href){";
+									evalJS += "a[i].onclick=function(e){";
+										evalJS += "e.preventDefault();";
+										evalJS += "var cwv = plus.webview.getWebviewById('"+self.id+"');";
+										evalJS += "mui.fire(cwv, 'hrefH5', {'href':this.href})";
+									evalJS += "}";
+								evalJS += "}";
+							evalJS += "}";
+						evalJS += "});";
+						sub.appendJsFile('../js/mui.min.js');
+						sub.evalJS(evalJS);
+						
+						window.addEventListener("hrefH5", function(event){
+							console.info("href: "+event.detail.href);
+							app.createHeader({subUrl: event.detail.href, token:true, h5: true});
+						}, false);
+						
+						app.injection(sub, self.id, "UserStatus", ["status"], "{'status':status}");
+						window.addEventListener("UserStatus", function(event){
+							console.info("status: "+event.detail.status);
+							if(0 == event.detail.status){
+								app.hrefUrl("login_hub.html");
+							}
+						}, false);
+						
+					}
+					
+					
+				}
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

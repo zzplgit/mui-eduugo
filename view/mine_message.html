@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/mine_message.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">我的信息</h1>
+		    <!--<button class="mui-btn mui-btn-link mui-pull-right mine-save-btn">保存</button>-->
+		</header>
+		
+		<div class="mui-content">
+			<ul class="mui-table-view">
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right mine-headerimg">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">头像</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right">
+		        			<img class="mine-headerimg-img" src="../images/headerimg_placeholder.png" />
+		        		</div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">昵称</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right mine-li-val mine-name"></div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">手机</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right mine-li-val mine-mobile"></div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">性别</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right mine-li-val mine-gender"></div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">所在城市</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right mine-li-val mui-city"></div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<div class="mui-table-cell mui-col-xs-4 mine-li-title">毕业学校</div>
+		        		<div class="mui-table-cell mui-col-xs-10 mui-text-right mui-ellipsis mine-li-val mui-school"></div>
+		        	</div>
+		        </li>
+		    </ul>
+
+		</div>
+		<footer class="app-none">
+			<div class="app-backdrop"></div>
+			<div class="app-bottom-input">
+				<form action="" class="app-bottom-form">
+					<div class="mui-input-row">
+						<input class="app-input" type="text" placeholder="" />
+					</div>
+					<div class="app-bottom-btn mui-button-row">
+						<input class="app-submit" type="button" value="确认" />
+					</div>
+				</form>
+			</div>
+		</footer>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var state, token, editInEl, genderPicker, mask;
+				$.init();
+				$.ready(function(){
+					genderPicker = new $.PopPicker();
+					genderPicker.setData([
+						{value:0, text:'保密'},
+						{value:1, text:'男'},
+						{value:2, text:'女'}
+					]);
+				});
+				$.plusReady(function(){
+					mask = new app.mask();
+					
+					state = app.getState();
+					token = state.token || '';
+					if(!token){
+						app.logout(function(){
+							app.hrefUrl("login_hub.html");
+						});
+						return;
+					}
+					
+					getUserInfo();
+					
+					doc.querySelector(".mine-headerimg").addEventListener("tap", function(){
+						imgUp();
+					});
+					
+//					doc.querySelector(".mine-save-btn").addEventListener("tap", function(){
+//						saveUserInfo();
+//					});
+					
+					$(".mui-table-view").on("tap", "li", function(e){
+						editInEl = this.querySelector(".mine-li-val");
+						var placeholder = this.querySelector(".mine-li-title").textContent;
+						if("头像" == placeholder){
+							return;
+						}
+						if("手机" == placeholder){
+							return;
+						}
+						if("性别" == placeholder){
+							genderPicker.show(function(selectedItem){
+								editInEl.textContent = selectedItem[0].text;
+								saveUserInfo();
+							});
+							return;
+						}
+						doc.querySelector(".app-bottom-input .app-input").placeholder = "请输入"+placeholder;
+						doc.querySelector("footer").classList.remove("app-none");
+						doc.querySelector(".app-bottom-input .app-input").focus();
+					});
+					
+					doc.querySelector(".app-bottom-input .app-input").addEventListener("blur", function(){
+						doc.querySelector("footer").classList.add("app-none");
+						doc.querySelector(".app-bottom-input .app-input").value = "";
+					});
+					
+					doc.querySelector(".app-backdrop").addEventListener('touchstart',function(e){
+						e.preventDefault();
+						doc.querySelector(".app-bottom-input .app-input").blur();
+						
+					});
+					
+					doc.querySelector(".app-backdrop").addEventListener('touchmove',function(e){
+						e.preventDefault();
+						doc.querySelector(".app-bottom-input .app-input").blur();
+					});
+					
+					doc.querySelector(".app-bottom-input .app-submit").addEventListener("tap", function(e){
+						//阻止冒泡事件
+						e.preventDefault();
+						inputSubmit();
+					});
+					
+					doc.querySelector(".app-bottom-form").addEventListener("submit", function(e){
+						//阻止冒泡事件
+						e.preventDefault();
+						inputSubmit();
+					});
+				});
+				
+				function inputSubmit(){
+					var word = doc.querySelector(".app-bottom-input .app-input").value;
+					doc.querySelector(".app-bottom-input .app-input").blur();
+					if(word){
+						editInEl.textContent = word;
+						saveUserInfo();
+					}
+				}
+				
+				function getUserInfo(){
+					var url = app.apiHost+"/user/get-user-info";
+					var param = {'token':token};
+					mask.show();
+					$.post(url, param, function(res){
+						mask.close();
+						if(res.code == 1){
+							if(res.data.user.avatar){
+								doc.querySelector(".mine-headerimg-img").src = res.data.user.avatar;
+							}
+							//console.info(res.data.user.avatar);
+							doc.querySelector(".mine-name").textContent = res.data.user.name;
+							doc.querySelector(".mine-mobile").textContent = res.data.user.mobile;
+							switch(res.data.user.gender){
+								case 1:
+									doc.querySelector(".mine-gender").textContent = res.data.user.gender = '男';
+								break;
+								case 2:
+									doc.querySelector(".mine-gender").textContent = res.data.user.gender = '女';
+								break;
+								default:
+									doc.querySelector(".mine-gender").textContent = res.data.user.gender = '保密';
+								break;
+							}
+							
+							doc.querySelector(".mui-city").textContent = res.data.user.city;
+							doc.querySelector(".mui-school").textContent = res.data.user.school;
+						}else{
+							if(res.code == 3){
+								app.logout(function(){
+									mui.toast('登陆过期请重新登录',{ duration:'long', type:'div' });
+									app.hrefUrl("login_hub.html");
+								});
+								return;
+							}
+							$.back();
+						}
+					}, "json");
+				}
+				
+				function imgUp(){
+					var m=this;  
+                    plus.nativeUI.actionSheet({cancel:"取消",buttons:[  
+                        {title:"拍照"},  
+                        {title:"从相册中选择"}  
+                    ]}, function(e){
+                    	//1 是拍照  2 从相册中选择
+                        switch(e.index){  
+                            case 1:clickCamera();break;  
+                            case 2:clickGallery();break;  
+                        }  
+                    }); 
+				}
+				
+				function clickGallery() {  
+			        plus.gallery.pick(function(path) {  
+						toB64(path);
+			        }, function(err) {}, {filter:"image"});
+			    }
+				
+			    function clickCamera() {  
+			        var cmr = plus.camera.getCamera();  
+			        var res = cmr.supportedImageResolutions[0];  
+			        var fmt = cmr.supportedImageFormats[0];
+			        cmr.captureImage(function(path) {
+			 			plus.io.resolveLocalFileSystemURL(path, function(entry) {  
+            				var localurl = entry.toLocalURL();
+            				toB64(localurl);
+						});
+					}, function(err) {});
+				}
+			    
+			    function toB64(path){
+					var image = new Image();
+					image.src = path;
+					image.onload = function() {
+						var imgData = getBase64Image(image);
+						doc.querySelector(".mine-headerimg-img").src = path;
+						saveHeaderimg(imgData);
+					}
+			    }
+			    
+				function getBase64Image(img) {
+					var canvas = document.createElement("canvas");
+					var width = img.width;
+					var height = img.height;
+					// calculate the width and height, constraining the proportions
+					if (width > height) {
+						if (width > 100) {
+							height = Math.round(height *= 100 / width);
+							width = 100;
+						}
+					} else {
+						if (height > 100) {
+							width = Math.round(width *= 100 / height);
+							height = 100;
+						}
+					}
+					canvas.width = width; /*设置新的图片的宽度*/
+					canvas.height = height; /*设置新的图片的长度*/
+					var ctx = canvas.getContext("2d");
+					ctx.drawImage(img, 0, 0, width, height); /*绘图*/
+					var dataURL = canvas.toDataURL("image/png", 0.8);
+					return dataURL.replace("data:image/png;base64,", "");
+				}
+				
+				function saveUserInfo(){
+					var url = app.apiHost+"/user/update-user-info";
+					var param = {'token': token};
+					param.name = doc.querySelector(".mine-name").textContent;
+					
+					switch(doc.querySelector(".mine-gender").textContent){
+						case "男":
+							param.gender = 1;
+						break;
+						case "女":
+							param.gender = 2;
+						break;
+						default:
+							param.gender = 0;
+						break;
+					}
+					
+					
+					param.city = doc.querySelector(".mui-city").textContent;
+					param.school = doc.querySelector(".mui-school").textContent;
+//					if(!param.name){
+//						$.toast("请输入昵称");
+//						return;
+//					}else 
+					if(param.name != "" && (param.name.length < 2 || param.name.length > 12)){
+						$.toast("昵称必须大于2字符小于12字符");
+						return;
+					}
+//					if(!param.city){
+//						$.toast("请输入所在城市");
+//						return;
+//					}
+//					if(!param.school){
+//						$.toast("请输入毕业学校");
+//						return;
+//					}
+					mask.show();
+					$.post(url, param, function(res){
+						mask.close();
+						var msg = "保存成功";
+						if(res.code == 1){
+							app.updateToken(function(res){
+								if(res && res.code == 1){
+									state = res.state;
+									state.user.name = param.name;
+									app.setState(state);
+									token = res.state.token;
+									var h = plus.webview.getWebviewById("mine.html");
+									if(h){
+										h.reload(true);
+									}
+//									$.back();
+								}
+							});
+						}else{
+							msg = res.message || "保存失败";
+						}
+						$.toast(msg);
+					}, "json");
+					
+				}
+				
+				function saveHeaderimg(avatar){
+					if(!token){
+						$.back();
+					}
+					var avatar = "data:image/jpeg;base64,"+avatar;
+					var url = app.apiHost+"/user/update-avatar";
+					var param = {
+						'token': token,
+						'avatar': "[\""+avatar+"\"]"
+					};
+					$.post(url, param, function(res){
+						var msg = "保存成功";
+						if(res.code == 1){
+							app.updateToken(function(res){
+								if(res.code == 1){
+									state = res.state;
+									state.user.avatar = avatar;
+									app.setState(state);
+									token = res.state.token;
+									var h = plus.webview.getWebviewById("mine.html");
+									if(h){
+										h.reload(true);
+									}
+								}
+							});
+						}else{
+							msg = res.message || "保存失败";
+						}
+						$.alert(msg, " ", "确定", $.noop(), "div");
+					}, "json");
+				};
+				
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

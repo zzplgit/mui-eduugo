@@ -1,0 +1,116 @@
+.discovery-table {
+	margin-top: 10px;
+}
+
+.mui-table-view:before {
+	height: 0px;
+}
+
+.mui-table-view:after {
+	height: 0px;
+}
+
+.discovery-cell {
+	padding: 10px 5px;
+}
+
+.mui-table-view-cell::after {
+	height: 0px;
+}
+
+
+.discovery-cell .discovery-cell-item {
+	position: inherit;
+	height: 207px;
+}
+
+.discovery-cell-item .discovery-cell-item-pic {
+	height: 207px;
+	width: 100%;
+	border-radius: 5px;
+}
+
+.discovery-cell-item .discovery-cell-item-explain {
+	background: rgba(0,0,0,.5);
+	border-radius: 5px;
+	height: 44px;
+	width: 100%;
+	bottom: 0;
+	position: absolute;
+}
+
+.discovery-cell-item-explain .discovery-portrait {
+	float: left;
+	margin: 4px 15px 0 15px;
+}
+
+.discovery-cell-item-explain .discovery-portrait img{
+	height: 36px;
+	width: 36px;
+	border-radius:50%;
+}
+
+.discovery-cell-item-explain .discovery-left-block {
+	float: left;
+	line-height: 18px;
+	width: 40%;
+	padding: 3px 0px 1px 0px;
+}
+
+.discovery-left-block .discovery-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #FFFFFF;
+	font-size: 12px;
+}
+
+.discovery-left-block .discovery-area {
+	overflow:hidden;
+	text-overflow: ellipsis;
+	color: #FFFFFF;
+	font-size: 10px;
+}
+
+.discovery-left-block .discovery-area img {
+	height: 14px;
+	width: 12px;
+	vertical-align: middle;
+}
+
+.discovery-cell-item-explain .discovery-right-block {
+	float: right;
+	line-height: 18px;
+	padding: 3px 10px 1px 0px;
+}
+
+.discovery-right-block nobr {
+	float: right;
+}
+
+.discovery-right-block .discovery-live {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: rgb(255, 85, 4);
+	font-size: 14px;
+}
+
+.discovery-right-block .discovery-enroll {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: rgb(125, 211, 43);
+	font-size: 14px;
+}
+
+.discovery-right-block .discovery-review {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: rgb(72, 142, 222);
+	font-size: 14px;
+}
+
+.discovery-right-block .discovery-count {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #FFFFFF;
+	font-size: 10px;
+}

@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<div class="mui-content login-hub-content" >
+			<div class="login-hub-content-close">
+				<a class="mui-action-back"><img src="../images/close.png" /></a>
+			</div>
+			<div class="login-hub-middle">
+				<div><img class="login-hub-log" src="../images/eduugo-hub.png" /></div>
+				<div><img class="login-hub-welcome" src="../images/welcome.png" /></div>
+			</div>
+			<div class="mui-button-group">
+				<div class="mui-button-row">
+					<button id="loginBtn" type="button" class="mui-btn login-hub-btn-login" onclick="return false;">登录</button>&nbsp;&nbsp;
+				</div>
+				<div class="mui-button-row">
+					<button id="registerBtn" type="button" class="mui-btn login-hub-btn-reg" onclick="return false;">注册</button>&nbsp;&nbsp;
+				</div>
+			</div>
+		</div>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			
+			(function($, doc){
+				var self;
+
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					doc.getElementById("loginBtn").addEventListener("tap", function(){
+						app.hrefUrl("login.html");
+					});
+					
+					doc.getElementById("registerBtn").addEventListener("tap", function(){
+						app.hrefUrl("register.html");
+					});
+
+				});
+				
+			}(mui, document));
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet">
+		<link href="../css/consult.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar app-bar-top">
+			<span>
+				<img src="../images/eduugo.png" />
+			</span>
+		</header>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="consult-banner">
+				<img src="../images/college-library.png" />
+			</div>
+			<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted consult-slider-indicator">
+			    <div id="consultTag" class="mui-scroll"></div>
+			</div>
+			<div class="mui-scroll" id="pullrefresh">
+
+				<ul class="mui-table-view consult-table-view"></ul>
+				<template id="consultCell">
+					<li class="mui-table-view-cell mui-media">
+				        <a href="javascript:;">
+				            <img class="mui-media-object mui-pull-right" src="">
+				            <div class="mui-media-body consult-media-body">
+				                <span class="mui-ellipsis-2 consult-media-title"></span>
+				                <img class="consult-media-portrait" src="../images/headerimg_placeholder.png" />
+				                <span class="mui-ellipsis consult-media-name"></span>
+				                <span class="mui-pull-right consult-media-num">阅读: <span>0</span></span>
+				            </div>
+				        </a>
+				    </li>
+				</template>
+			</div>
+		</div>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.pullToRefresh.js"></script>
+		<script src="../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript">
+			
+			var consult = {
+				pageLock: false,
+				self: null,
+				pageNo: 1,
+				tagId: null,
+				pageSize: 10,
+				getArticle: function(pullDown){
+					if(consult.tagId == null){
+						return;
+					}
+					if(consult.pageLock){
+						return;
+					}
+					var url = app.apiHost+"/article/get-page-article";
+					var param = {
+						'pageNo': consult.pageNo,
+						'tagId': consult.tagId,
+						'pageSize': consult.pageSize
+					};
+					consult.pageLock = true;
+					mui.getJSON(url, param, function(data){
+						consult.pageLock = false;
+						if(data && data.code == 1){
+							var ul = document.querySelector(".consult-table-view");
+							ul.insertBefore(consult.createFragment(data.data.article), ul.lastChild);
+							consult.pageNo++;
+							if(data.data.pageMaxNum >= consult.pageNo){
+								consult.self.endPullUpToRefresh();
+							}else{
+								consult.self.endPullUpToRefresh(true);
+							}
+						}else{
+							consult.self.endPullUpToRefresh(true);
+						}
+						if(pullDown){
+							consult.self.endPullDownToRefresh();
+						}
+						
+					});
+				},
+				createFragment: function(data){
+					var fragment = document.createDocumentFragment();
+					var li;
+					for (var i = 0; i < data.length; i++) {
+						li = document.getElementById("consultCell").content.cloneNode(true);
+						li.querySelector(".mui-table-view-cell").name = "consult-"+data[i].article_id
+						li.querySelector(".consult-media-title").textContent = data[i].title;
+						li.querySelector(".consult-media-name").textContent = data[i].name;
+						li.querySelector(".consult-media-num span").textContent = data[i].browse_num;
+						li.querySelector(".mui-media-object.mui-pull-right").src = data[i].cover;
+						if(data[i].image){
+							li.querySelector(".consult-media-portrait").src = data[i].image;
+						}
+						li.querySelector(".mui-table-view-cell").addEventListener("tap", function(){
+							var id = this.name.replace("consult-", "");
+							app.hrefUrl("consult_detail.html", {articleId:id});
+						});
+						fragment.appendChild(li);
+					}
+					
+					return fragment;
+				},
+				getTag: function(){
+					if(consult.pageLock){
+						return;
+					}
+					var url = app.apiHost+"/article/get-tag";
+					var param = {};
+					consult.pageLock = true;
+					mui.getJSON(url, param, function(data){
+							consult.pageLock = false;
+							if(data.code == 1 && data.data.tag.length > 0){
+								var consultTag = document.getElementById("consultTag");
+								var fragment = document.createDocumentFragment();
+								var a, tagId;
+								for(var i in data.data.tag){
+									tagId = data.data.tag[i].tag_id;
+									a = document.createElement("a");
+									if(i == 0){
+										consult.pageNo = 1;
+										consult.tagId = tagId;
+										consult.self.pullUpLoading();
+										a.className = "mui-control-item mui-active";
+									}else{
+										a.className = "mui-control-item";
+									}
+									a.name = "tag_"+tagId;
+									a.innerHTML = data.data.tag[i].tag_name;
+									a.addEventListener("tap", function(){
+										consult.self.refresh(true);
+										var _tag = this.name.split("tag_");
+										document.querySelector(".consult-table-view").innerHTML = "";
+										consult.pageNo = 1;
+										consult.tagId = _tag[1];
+										consult.getArticle();
+									});
+									fragment.appendChild(a);
+								}
+								consultTag.insertBefore(fragment, consultTag.firstChild);
+							}
+						}
+					);
+				}
+			};
+
+			mui.init();
+			mui.ready(function(){
+				//阻尼系数
+				var deceleration = mui.os.ios?0.003:0.0009;
+				mui('.mui-content.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				consult.self = mui("#pullrefresh").pullToRefresh({
+					down: {
+						height: 50,
+						callback: function() {
+							document.querySelector(".consult-table-view").innerHTML = "";
+							consult.pageNo = 1;
+							consult.self.refresh(true);
+							consult.getArticle(true);
+						}
+					},
+					up: {
+						auto: false,
+						offset: 200,
+						contentrefresh: '正在加载...',
+						contentnomore: '已经全部加载完成',
+						callback: function() {
+							consult.getArticle();
+						}
+					}
+				});
+				consult.getTag();
+				
+				document.querySelector(".consult-banner").addEventListener("tap", function(){
+					app.hrefUrl("school.html");
+				});
+			});
+			
+		</script>
+		
+		
+	</body>
+
+</html>

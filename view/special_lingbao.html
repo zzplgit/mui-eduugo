@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title"></h1>
+		    <div class="mui-icon mui-pull-right">
+		    	<img class="app-share app-none" src="../images/bt-share-click2.png" />
+		    </div>
+		</header>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			
+			(function($, doc){
+				var self;
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					createSub();
+				});
+				
+				function createSub(){
+					var subUrl = app.webHost+"lingbao";
+					var subpage_style = {
+						top: '64px',
+						bottom: '0px'
+					};
+					var sub = plus.webview.create(subUrl, subUrl, subpage_style);
+					self.append(sub);
+					//遮罩
+					var mask = plus.nativeUI.showWaiting();
+					self.setStyle({mask:"rgba(0,0,0,0.5)"});
+					sub.onloaded=function(){
+						mask.close();
+						self.setStyle({mask:"none"});
+					};
+					
+					app.injection(sub, self.id, "LinkJump", ["type", "id"], "{'type':type, 'id':id}");
+					window.addEventListener("LinkJump", function(event){
+//						console.info("type: "+event.detail.type);
+//						console.info("id: "+event.detail.id);
+						if("video" == event.detail.type){
+							app.hrefUrl("video_review.html", {videoId: event.detail.id});
+						}else{
+							app.hrefUrl("video_live.html", {videoId: event.detail.id});
+						}
+					}, false);
+				
+				
+				}
+				
+			}(mui, document));
+			
+
+			
+			
+		</script>
+	</body>
+
+</html>

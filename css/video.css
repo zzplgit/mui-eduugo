@@ -1,0 +1,103 @@
+html,
+body {
+	background-color: #efeff4;
+}
+.app-none {display: none;}
+.video-none {height: 0 !important;}
+.video-object {position: relative;}
+.video-object video {height: 210px; width: 100%; position: absolute; background: #000000;}
+.video-object .mui-icon {padding: 0 5px; line-height: 44px; color: #ffffff; display: block; position: absolute;}
+.video-object .mui-action-back {margin-top: 12px;}
+.video-object .video-title {left: 35px; right: 10px; padding: 0 5px; margin-top: 24px; color: #ffffff; position: absolute; word-break:normal; white-space:pre-wrap; word-wrap:break-word;overflow: hidden;}
+.video-object .video-msg {width: 100%; height: 210px; background: #000000; background-size: 100% 100%; position: absolute; text-align: center;}
+.video-object .video-msg .video-msg-img {margin-top: 65px; height: 38px; width: 38px;}
+.video-object .video-msg .video-msg-text {font-size: 13px; color: #DCDCDC; line-height: 13px;}
+.video-object .video-msg .video-msg-text.video-line1 {margin-top: 15px;}
+.video-object .video-msg .video-msg-text.video-line2 {margin-top: 6px;}
+.video-object .video-msg .video-msg-btn button {font-size: 13px; color: #DCDCDC; line-height: 13px; background: #000000;}
+.video-object .video-msg .video-msg-btn.video-line3 {margin-top: 24px;}
+.video-object .video-play {width: 100%; height: 210px; background: #000000; background-size: 100% 100%; position: absolute;}
+.video-object .video-play.video-di {background: none;}
+.video-object .video-play img {position: absolute; top:50%; left:50%; margin-left:-38px;margin-top:-38px}
+.video-object .video-subtitle {position:absolute; bottom: -210px; font-size: 15px; color: #FFFFFF; padding: 0 30px; text-align: center;}
+.video-object .video-loadding img {position: absolute; top:50%; left:50%; margin-left:-38px;margin-top:76px; -webkit-animation:run 6s linear 0s infinite;}
+@-webkit-keyframes run{     
+    from{     
+        -webkit-transform:rotate(0deg);     
+    }     
+    to{     
+        -webkit-transform:rotate(360deg);     
+    }     
+}
+
+.video-object .video-controls {position: absolute; bottom: -210px; height: 40px; width: 100%; background: rgba(0,0,0,0.7);}
+.video-object .video-controls .video-control-btn {padding: 10px 10px; height: 100%; display: inline-block;}
+.video-object .video-controls .video-control-btn img {width: 20px; height: 20px;}
+.video-object .video-controls .video-progressbar {height: 40px; width: auto; margin-left: 40px; margin-right: 40px; position: relative; top: -40px;}
+.video-object .video-controls .video-progressbar.mui-progressbar {background: rgba(182, 182, 182, 0.6);}
+.video-object .video-controls .video-progressbar.mui-progressbar span {background: rgba(0, 122, 255, 0.5);}
+.video-object .video-controls .mui-input-range {height: 40px; width: auto; margin-left: 40px; margin-right: 40px; position: relative; top: -80px;}
+.video-object .video-controls .mui-input-range input[type="range"] {margin: 0 0; opacity: 0; height: 40px;}
+.video-object .video-controls .video-progress-time {top: 0px; position: absolute; line-height: 40px; right: 45px; font-size: 12px; color: #ffffff;}
+.video-detail-content {padding-top: 210px;}
+.video-detail-content .mui-control-content {background: #ffffff;}
+.video-detail-content #item2 {background: #efeff4; top: 10px;}
+.video-detail-content .mui-control-content .video-line{width: 100%; height: 10px; background: #efeff4;}
+.video-detail-content .mui-control-content .video-ppt {width: 100%; padding: 5px 8px 10px 7px; }
+.video-detail-content .video-chat-content {background: #EFEFF4; overflow: hidden; auto; top: 310px; bottom: 0px; position: fixed; height: auto; width: 100%;}
+.video-detail-content .video-chat-content .mui-pull {bottom: -44px; padding: 10px 0;}
+.video-chat-content .mui-table-view::before {height: 0;}
+.video-chat-content .mui-table-view::after {height: 0;}
+.video-chat-content .mui-table-view {background: #EFEFF4;}
+.video-chat-content .video-chat-scroll {overflow-y: auto; bottom: 50px;}
+.video-chat-content .mui-card {margin: 14px 5px; background: #ffffff;}
+.video-chat-content .mui-card .video-header-img {width: 34px; height: 34px; float: left; margin: 5px 12px 0 11px; border-radius: 50%;}
+.video-chat-content .mui-card .video-header-img ~ .mui-media-body {margin-top: 5px; margin-left: 57px; line-height: 39px;}
+.video-chat-content .mui-card .mui-card-content-inner{margin: 0 19px 10px 56px; background: #ffffff;}
+.video-table {margin-top: 10px;}
+.video-table.mui-table-view:before {height: 0px;}
+.video-table.mui-table-view:after {height: 0px;}
+.video-table .mui-table-view-cell::after {height: 0px;}
+.video-cell-item-href {overflow: hidden; height: 207px; width: 100%; bottom: 0; position: absolute;}
+.video-left-block .video-name {line-height: 41px; overflow: hidden; text-overflow: ellipsis; color: #FFFFFF; font-size: 12px;}
+.video-left-block .video-area {overflow:hidden; text-overflow: ellipsis; color: #FFFFFF; font-size: 10px;}
+.video-left-block .video-area img {height: 14px; width: 12px; vertical-align: middle;}
+.video-right-block nobr {float: right;}
+.video-right-block .video-status {line-height: 41px;}
+.video-right-block .video-live {overflow: hidden; text-overflow: ellipsis; color: rgb(255, 85, 4); font-size: 14px;}
+.video-right-block .video-enroll {overflow: hidden; text-overflow: ellipsis; color: rgb(125, 211, 43); font-size: 14px;}
+.video-right-block .video-review {overflow: hidden; text-overflow: ellipsis; color: rgb(72, 142, 222); font-size: 14px;}
+.video-right-block .video-count {overflow: hidden; text-overflow: ellipsis; color: #FFFFFF; font-size: 10px;}
+.video-bar {width: 100%; height: 50px;}
+.video-bar.video-bar-live {background: #f6a623; padding: 0 10px; box-sizing: border-box;}
+.video-bar.video-bar-review {background: rgb(72, 142, 222); padding: 0 10px; box-sizing: border-box;}
+.video-bar .video-headerimg {height: 44px; width: 44px; border-radius:50%; float: left; margin-top: 3px;}
+.video-bar .mui-table-cell {margin-left: 10px;}
+.video-bar .mui-h5,.mui-h6 {color: #ffffff;}
+.video-bar .mui-h5 {line-height: 16px; margin-bottom: 6px; margin-top: 8px;}
+.video-bar .mui-h6 { line-height: 12px; margin-bottom: 8px;}
+.video-bar .mui-table-cell {float: left;}
+.video-bar .video-live-icon {width: 34px; height: 13px; margin-top: 9px; float: left;}
+.video-bar .video-count-down {float: right; margin-top: 8px; height: 34px; text-align: right;}
+.video-bar .video-segmented-control {float: right; margin-top: 8px; height: 34px; width: 128px;}
+.video-bar .mui-segmented-control {border-color: #ffffff;}
+.video-bar.video-bar-review .mui-segmented-control .mui-control-item {line-height: 34px; font-weight: 800; border-left: 0px; color: #fff; background-color: rgb(72, 142, 222);}
+.video-bar.video-bar-review .mui-segmented-control .mui-control-item.mui-active {background: #ffffff; color: rgb(72, 142, 222);}
+.video-bar.video-bar-live .mui-segmented-control .mui-control-item {line-height: 34px; font-weight: 800; border-left: 0px; color: #fff; background-color: rgb(254, 167, 42);}
+.video-bar.video-bar-live .mui-segmented-control .mui-control-item.mui-active {background: #ffffff; color: rgb(254, 167, 42);}
+.video-content {width: 100% !important; top: 105px !important; position: absolute !important;}
+.video-content-tab.mui-segmented-control.mui-segmented-control-inverted.app-slider-indicator {top:64px; position: fixed; z-index: 10; right: 0; left: 0;}
+.video-content-tab.mui-segmented-control.mui-segmented-control-inverted.app-slider-indicator .mui-control-item {color: #9B9B9B; border: 0; font-size: 16px; line-height: 40px;}
+.video-content-tab.mui-segmented-control.mui-segmented-control-inverted.app-slider-indicator .mui-control-item.mui-active {color: #F6A623; font-size: 16px; background-image: url(../images/btn-line-s.png); background-repeat: no-repeat; background-size: 60px 3px; background-position: bottom;}
+.video-bottom-bar {height: 50px; width: 100%; padding: 7px 15px; background: #FFFFFF; position: fixed; bottom: 0; border-top: 1px rgb(210, 209, 215) solid;}
+.video-bottom-bar .mui-input-row {position: absolute;}
+.video-bottom-bar .mui-input-row input {height: 36px; margin-bottom: 0px; margin-right: -45px;}
+.video-bottom-bar .video-bottom-btn {position: absolute; top: 7px; right: 15px;}
+.video-bottom-bar .video-bottom-btn img {width: 36px; height: 36px; margin-left: 10px;}
+.video-detail-content.video-live .video-bottom-bar .mui-input-row input {height: 36px; margin-bottom: 0px; margin-right: 0px;}
+.video-detail-content .video-line-slider {height: 50px;}
+.video-detail-content .video-line-slider .mui-control-item {padding: 0px 15px; margin: 5px 0px;}
+.video-detail-content .video-line-slider .mui-control-item.mui-active{border: 1px solid #EEEEEE; background: #FAFAFA;}
+
+
+

@@ -1,0 +1,31 @@
+
+.mui-content > .mui-table-view:first-child {
+    margin-top: 0px;
+}
+
+.mui-table-view::before {
+	height: 0px;	
+}
+
+.mui-table-view::after {
+	height: 0px;
+}
+
+.mui-table-view-cell::after {
+	height: 0px;	
+}
+
+.mui-table {
+	color: #9b9b9b;
+	font-size: 16px;
+}
+
+.mine-headerimg-img {height: 60px; width: 60px; border-radius: 50%;}
+
+.mui-table .mui-table-cell {
+	vertical-align: middle;
+}
+
+.mui-table .mui-text-right.mui-table-cell {
+	padding-right: 24px;
+}

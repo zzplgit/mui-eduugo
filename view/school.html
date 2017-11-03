@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar school-top-bar">
+			<div class="top-line"></div>
+			<a class="mui-action-back mui-icon mui-pull-left">
+				<img src="../images/tb-fanhui-blck.png" />
+			</a>
+			<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted app-slider-indicator">
+			    <div>
+			        <a class="mui-control-item mui-active" href="#item1"><span>院校</span></a>
+			        <a class="mui-control-item" href="#item2"><span>排名</span></a>
+			    </div>
+			</div>
+		</header>
+		
+		<div id="pullrefresh" class="mui-content school-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				
+				<div class="mui-slider-group">
+					<div id="item1" class="mui-slider-item mui-control-content mui-active">
+						<div class="school-header">
+							<div class="school-header-line"></div>
+							<span>美国院校</span>
+							<!--<button class="mui-btn mui-btn-eduugo mui-color-white" type="button">对比</button>-->
+						</div>
+						<ul class="mui-table-view school-table"></ul>
+					</div>
+					<div id="item2" class="mui-slider-item mui-control-content">
+						<div class="school-header-rank">
+							<div class="school-header-line"></div>
+							<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted school-rank-tab">
+							    <div>
+							        <a name="rankTab1" class="mui-control-item mui-active"><span>文理学院</span></a>
+							        <a name="rankTab2" class="mui-control-item"><span>综合大学</span></a>
+							        <a name="rankTab3" class="mui-control-item"><span>本科最具价值</span></a>
+							    </div>
+							</div>
+						</div>
+						<ul class="mui-table-view school-table"></ul>
+					</div>
+				</div>
+				<template id="listCell">
+					<li class="mui-table-view-cell mui-media">
+						<a class="school-view-cell">
+							<img class="mui-media-object mui-pull-left school-logo" src="../images/headerimg_placeholder.png">
+							<div class="mui-media-body">
+								<div class="media-body-left">
+									<p class="mui-ellipsis school-name"></p>
+									<p class="mui-ellipsis school-name-en"></p>
+									<p class="mui-ellipsis school-text"></p>
+								</div>
+								<div class="media-body-right">
+									<p class="school-rank"></p>
+									<!--<img src="../images/tb-school-select.png" />-->
+								</div>
+							</div>
+						</a>
+					</li>
+				</template>
+			</div>
+		</div>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self;
+				var tabType = "item1";
+				var item1PageNo = 1;
+				var item2PageNo = 1;
+				var pageSize = 10;
+				var ranking = 1;
+				$.init({
+					pullRefresh: {
+						container: '#pullrefresh',
+						up: {
+							auto: true,
+							contentrefresh: '正在加载...',
+							contentnomore: '已经全部加载完成',
+							callback: pullupRefresh
+						}
+					}
+				});
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					self.setPullToRefresh({
+						support: true,
+						height: 100,
+						range: '100px',
+						style: 'circle',
+						offset: '1px'
+					}, pulldownRefresh);
+					
+					$(".app-slider-indicator").on("tap", "a", function(e){
+						tabType = this.getAttribute('href').substring(1, 6);
+						pulldownRefresh();
+					});
+					
+					$(".school-rank-tab").on("tap", "a", function(e){
+						ranking = this.getAttribute("name").substring(7, 8);
+						pulldownRefresh();
+					});
+				});
+				
+				function getPageNo(){
+					if(tabType == "item1"){
+						return item1PageNo;
+					}else{
+						return item2PageNo;
+					}
+				}
+				function setPageNo(pageNo){
+					if(tabType == "item1"){
+						item1PageNo = pageNo;
+					}else{
+						item2PageNo = pageNo;
+					}
+				}
+				function getUrl(){
+					if(tabType == "item1"){
+						return app.apiHost+"/university/get-page-university";
+					}else{
+						return app.apiHost+"/university/get-page-university-to-rank";
+					}
+				}
+				function pulldownRefresh(){
+					setPageNo(1);
+					mui('#pullrefresh').pullRefresh().refresh(true);
+					document.getElementById(tabType).querySelector(".school-table").innerHTML = "";
+					getList();
+				}
+				
+				function pullupRefresh(){
+					getList();
+				}
+				
+				function getList(){
+					pageNo = getPageNo();
+					var url = getUrl();
+					var param = {'pageNo':pageNo, 'pageSize':pageSize};
+					if(tabType == "item2"){
+						param.ranking = ranking;
+					}
+					mui.getJSON(url, param, function(data){
+							if(data && data.code == 1){
+								var ul = document.getElementById(tabType).querySelector(".school-table");
+								ul.insertBefore(createFragment(data.data.data), ul.lastChild);
+								pageNo++;
+								setPageNo(pageNo);
+								if(data.data.pageMaxNum >= pageNo){
+									mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+								}else{
+									mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+								}
+							}else{
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							}
+							self.endPullToRefresh();
+						}
+					);
+				};
+				function createFragment(data){
+					var fragment = document.createDocumentFragment();
+					var li;
+					for (var i = 0; i < data.length; i++) {
+						li = document.getElementById("listCell").content.cloneNode(true);
+						if(data[i].logo){
+							li.querySelector(".school-logo").src = data[i].logo;
+						}
+						li.querySelector(".school-name").textContent = data[i].cn_name;
+						li.querySelector(".school-name-en").textContent = data[i].en_name;
+						li.querySelector(".school-text").textContent = data[i].location;
+						li.querySelector(".school-rank").textContent = "本国排名"+data[i].rank;
+						li.querySelector(".school-view-cell").name = "school-"+data[i].university_id
+						li.querySelector(".school-view-cell").addEventListener("tap", function(){
+							var unId = this.name.replace("school-", "");
+							app.hrefUrl("school_detail.html", {unId: unId});
+						});
+						
+						fragment.appendChild(li);
+					}
+					return fragment;
+				}
+
+			}(mui, document));
+			
+		</script>
+	</body>
+
+</html>

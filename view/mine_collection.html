@@ -1,0 +1,255 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper collection-content">
+			<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+			    <div>
+			        <a class="mui-control-item mui-active" href="#item1"><span>视频</span></a>
+			        <a class="mui-control-item" href="#item2"><span>文章</span></a>
+			    </div>
+			</div>
+			<div class="mui-slider-group">
+				<div id="item1" class="mui-slider-item mui-control-content mui-active">
+					<ul class="mui-table-view video-table"></ul>
+				</div>
+				<div id="item2" class="mui-slider-item mui-control-content">
+					<ul class="mui-table-view consult-table-view"></ul>
+				</div>
+			</div>
+		</div>
+		<template id="videoCell">
+			<li class="mui-table-view-cell video-cell">
+				<div class="video-cell-item">
+					<img src="../images/shuijiao.jpg" class="video-cell-item-pic"/>
+					<div class="video-cell-item-explain">
+						<div class="video-portrait">
+							<img src="../images/headerimg_placeholder.png" />
+						</div>
+						<div class="video-left-block">
+							<div class="video-name"><nobr></nobr></div>
+						</div>
+						<div class="video-right-block">
+							<div class="video-time">
+								<nobr></nobr>
+							</div>
+						</div>
+					</div>
+					<div class="video-status"></div>
+					<div class="video-title">
+						<div class="video-toptitle"></div>
+						<div class="video-subtitle"></div>
+					</div>
+					<!--<a class="video-cell-item-href"></a>-->
+				</div>
+			</li>
+		</template>
+		<template id="consultCell">
+			<li class="mui-table-view-cell mui-media">
+		        <a href="javascript:;">
+		            <img class="mui-media-object mui-pull-right" src="">
+		            <div class="mui-media-body consult-media-body">
+		                <span class="mui-ellipsis-2 consult-media-title"></span>
+		                <img class="consult-media-portrait" src="../images/headerimg_placeholder.png" />
+		                <span class="mui-ellipsis consult-media-name"></span>
+		                <span class="mui-pull-right consult-media-num">阅读: <span>0</span></span>
+		            </div>
+		        </a>
+		    </li>
+		</template>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self, state, token;
+				var tabType = "item1";
+				var item1PageNo=item2PageNo= 1;
+				var pageSize = 10;
+				$.init({
+					pullRefresh: {
+						container: '#pullrefresh',
+						up: {
+							auto: true,
+							contentrefresh: '正在加载...',
+							contentnomore: '已经全部加载完成',
+							callback: pullupRefresh
+						}
+					}
+				});
+				$.plusReady(function(){
+					state = app.getState();
+					token = state.token || "";
+					self = plus.webview.currentWebview();
+					self.setPullToRefresh({
+						support: true,
+						height: 100,
+						range: '100px',
+						style: 'circle',
+						offset: '1px'
+					}, pulldownRefresh);
+					
+					$(".app-slider-indicator").on("tap", "a", function(e){
+						tabType = this.getAttribute('href').substring(1, 6);
+						pulldownRefresh();
+					});
+					
+				});
+				
+				function getPageNo(){
+					if(tabType == "item1"){
+						return item1PageNo;
+					}else{
+						return item2PageNo;
+					}
+				}
+				function setPageNo(pageNo){
+					if(tabType == "item1"){
+						item1PageNo = pageNo;
+					}else{
+						item2PageNo = pageNo;
+					}
+				}
+				function getUrl(){
+					if(tabType == "item1"){
+						return app.apiHost+"/user/get-page-store-video";
+					}else{
+						return app.apiHost+"/user/get-page-store-article";
+					}
+				}
+				
+				function pulldownRefresh(){
+					setPageNo(1);
+					mui('#pullrefresh').pullRefresh().refresh(true);
+					document.getElementById(tabType).querySelector(".mui-table-view").innerHTML = "";
+					getList();
+				}
+				
+				function pullupRefresh(){
+					getList();
+				}
+				
+				function getList(){
+					pageNo = getPageNo();
+					var url = getUrl();
+					var param = {'pageNo':pageNo, 'pageSize':pageSize};
+					param.token = token;
+
+					$.post(url, param, function(data){
+						if(data && data.code == 1){
+							var ul = document.getElementById(tabType).querySelector(".mui-table-view");
+							ul.insertBefore(createFragment(data.data.data), ul.lastChild);
+							pageNo++;
+							setPageNo(pageNo);
+							if(data.data.pageMaxNum >= pageNo){
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+							}else{
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							}
+						}else{
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+						}
+						self.endPullToRefresh();
+					}, "json");
+				};
+				
+				function createFragment(data){
+					var fragment
+					if(tabType == "item1"){
+						fragment = _createFragment1(data);
+					}else{
+						fragment = _createFragment2(data);
+					}
+					return fragment;
+				}
+				
+				function _createFragment1(data){
+					var fragment = document.createDocumentFragment();
+					var li;
+					for (var i = 0; i < data.length; i++) {
+						li = document.getElementById("videoCell").content.cloneNode(true);
+						li.querySelector(".video-cell-item-pic").src = data[i].cover;
+						if(data[i].speaker){
+							if(data[i].speaker[0].image && data[i].speaker[0].image != "http://cdn.dev.eduugo.com//images/"){
+								li.querySelector(".video-portrait img").src = data[i].speaker[0].image;
+							}
+							li.querySelector(".video-name nobr").textContent = data[i].speaker[0].name;
+							if(data[i].speaker[0].info){
+								li.querySelector(".video-area span").textContent = data[i].speaker[0].info;
+								li.querySelector(".video-area").classList.remove("mui-hidden");
+							}
+						}
+						var videoStatus = li.querySelector(".video-status");
+						var videoHref = li.querySelector(".video-cell-item");
+						videoHref.name = "video-id-"+(data[i].video_id || data[i].live_id);
+						switch(data[i].play_type){
+							case 1:
+								if(data[i].status && data[i].status==1){
+									videoStatus.classList.add("video-live");
+									videoStatus.textContent = "直播";
+									videoHref.addEventListener('tap', function(){
+										var videoId = this.name.replace("video-id-", "");
+										app.hrefUrl("video_live.html", {videoId: videoId});
+									});
+								}else{
+									videoStatus.classList.add("video-enroll");
+									videoStatus.textContent = "报名";
+									videoHref.addEventListener('tap', function(){
+										var videoId = this.name.replace("video-id-", "");
+										var token = video.getToken();
+										var enrollUrl = app.webHost+"live/view&id="+videoId+"&token="+(token || '');
+										app.hrefUrl("template_back.html", {subUrl: enrollUrl});
+									});
+								}
+							break;
+							case 4:
+								videoStatus.classList.add("video-review");
+								videoStatus.textContent = "回顾";
+								videoHref.addEventListener('tap', function(){
+									var videoId = this.name.replace("video-id-", "");
+									app.hrefUrl("video_review.html", {videoId: videoId});
+								});
+							break;
+						}
+						
+						fragment.appendChild(li);
+					}
+					return fragment;
+				}
+				
+				function _createFragment2(){
+					var fragment = document.createDocumentFragment();
+					var li;
+					for (var i = 0; i < data.length; i++) {
+						li = document.getElementById("consultCell").content.cloneNode(true);
+						li.querySelector(".mui-table-view-cell").name = "consult-"+data[i].article_id
+						li.querySelector(".consult-media-title").textContent = data[i].title;
+						li.querySelector(".consult-media-name").textContent = data[i].name;
+						li.querySelector(".consult-media-num span").textContent = data[i].browse_num;
+						li.querySelector(".mui-media-object.mui-pull-right").src = data[i].cover;
+						if(data[i].image){
+							li.querySelector(".consult-media-portrait").src = data[i].image;
+						}
+						li.querySelector(".mui-table-view-cell").addEventListener("tap", function(){
+							var id = this.name.replace("consult-", "");
+							app.hrefUrl("consult_detail.html", {articleId:id});
+						});
+						fragment.appendChild(li);
+					}
+					return fragment;
+				}
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

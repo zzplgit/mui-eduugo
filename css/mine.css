@@ -1,0 +1,31 @@
+body {
+	background: #FFFFFF;
+}
+.mine-bar-top {height: 220px; background: url(../images/mine-bg-head.png) no-repeat; text-align:center; display: table; width: 100%; background-size: 100% 100%;}
+.mine-bar-top .mui-btn {top: 31px; border: 0px; background: url(../images/tb-shezhi.png) no-repeat; background-size: 22px 22px; height: 22px; width: 22px;}
+.mine-bar-top .mui-title {top: 31px; font-size: 18px; color: #FFFFFF; line-height: 18px;}
+.mine-bar-top .mine-portrait {margin:0 auto; position: relative; top: 77px; width: 90px; height: 90px; background: #ffffff; border-radius: 50%;}
+.mine-bar-top .mine-portrait .mine-avatar{vertical-align: middle; width: 80px; height: 80px; border-radius:50%; margin-top: 5px;}
+.mine-bar-top .mine-portrait .mine-edit {position: absolute; left: 108px; bottom: 0px; height: 24px; width: 24px;}
+.mine-bar-top .mine-portrait .mine-edit img {height: 24px; width: 24px;}
+.mine-bar-top .mine-portrait .mine-name {margin-top: 17px; font-size: 16px; color: #FFFFFF; line-height: 16px;}
+.mui-bar-nav ~ .mui-content {padding-top: 220px; background: #ffffff;}
+.mui-content > .mui-table-view:first-child {margin-top: 30px;}
+.mui-table-view::before {height: 0px;}
+.mui-table-view::after {height: 0px;}
+.mui-table-view-cell::after {height: 0px;}
+.mui-table-view-cell {margin-top: 8px;}
+.mui-table {color: #9b9b9b; font-size: 16px; line-height: 16px;}
+.mui-table .mui-table-cell {vertical-align: middle;}
+.mui-table .mui-table-cell.mine-cell {padding-left: 40px;}
+.mui-table .mui-text-right.mui-table-cell {padding-right: 24px;}
+.mine-icon {width: 20px; height: 20px; margin: 0px 10px;}
+/**
+ * 设置
+ */
+.mine-setting-content {background: #FFFFFF;}
+.mine-setting-content .mui-table-view {margin-left: 15px; margin-right: 5px;}
+.mine-setting-content .mui-button-row {margin: 15px 30px 20px 30px;}
+.mine-setting-content .mui-button-row .mui-btn {width: 100%; background: #F6A623; border: 0; padding-top: 10px; padding-bottom:10px; color: #FFFFFF; font-size: 14px;}
+
+

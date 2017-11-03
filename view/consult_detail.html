@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title"></h1>
+		</header>
+		
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			
+			
+			(function($, doc){
+				$.init();
+				$.plusReady(function(){
+					var state = app.getState();
+					var token = state.token || '';
+					var self = plus.webview.currentWebview();
+					var subpage = app.webHost+"article/view&id="+self.articleId+"&token="+token;
+					
+					console.info(subpage);
+					
+					var subpage_style = {
+						top: '64px',
+						bottom: '0px'
+					};
+					var sub = plus.webview.create(subpage, subpage, subpage_style);
+					self.append(sub);
+					app.injection(sub, 'consult_detail.html', "UserStatus", ["status"], "{'status':status}");
+					window.addEventListener("UserStatus", function(event){
+						console.info("status: "+event.detail.status);
+					}, false);
+				});
+				
+			}(mui, document));
+
+
+
+
+		</script>
+	</body>
+
+</html>

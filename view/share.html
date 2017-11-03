@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<div class="share-content">
+			<div class="mui-table">
+				<div class="mui-table-cell mui-text-center share-qq">
+					<img src="../images/qq.png" />
+					<div>QQ</div>
+				</div>
+				<div class="mui-table-cell mui-text-center share-weixin">
+					<img src="../images/weixin.png" />
+					<div>微信好友</div>
+				</div>
+				<div class="mui-table-cell mui-text-center share-pyq">
+					<img src="../images/pyq.png" />
+					<div>微信朋友圈</div>
+				</div>
+			</div>
+			<div class="share-close">
+				关闭
+			</div>
+			
+			
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self, maskWs, old_back;
+				var shares=null;
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					var maskId = self.maskId;
+					maskWs = plus.webview.getWebviewById(maskId);
+					maskWs.setStyle({mask:"rgba(0,0,0,0.5)"});
+					maskWs.addEventListener("maskClick",function(){
+					    shareClose();
+					},false);
+					old_back = $.back;
+					$.back = function() {
+						shareClose();
+					}
+					
+					doc.querySelector(".share-close").addEventListener("tap", function(){
+						shareClose();
+					});
+					
+					shareHref();
+					
+				});
+	
+				function shareClose(){
+					maskWs.setStyle({mask:"none"});
+					old_back();
+				}
+				
+				function shareHref(){
+					plus.share.getServices(function(s){
+						shares={};
+						for(var i in s){
+							var t=s[i];
+							shares[t.id]=t;
+						}
+						_shareHref();
+					}, function(e){
+						outSet('获取分享服务列表失败：'+e.message);
+					});
+				}
+				
+				function _shareHref(){
+					var flag = true;
+					var sb = self.msg;
+					if(shares['weixin']&&shares['weixin'].nativeClient){
+						flag = false;
+						doc.querySelector(".share-weixin").addEventListener("tap", function(){
+							shareAction($.extend(sb, {s:shares['weixin'], x:'WXSceneSession'}));
+						});
+						doc.querySelector(".share-pyq").addEventListener("tap", function(){
+							shareAction($.extend(sb, {s:shares['weixin'], x:'WXSceneTimeline'}));
+						});
+					}
+					if(shares['qq']&&shares['qq'].nativeClient){
+						flag = false;
+						doc.querySelector(".share-qq").addEventListener("tap", function(){
+							shareAction($.extend(sb, {s:shares['qq']}));
+						});
+					}
+					if(flag){
+						plus.nativeUI.alert('当前环境无法支持分享链接操作!');
+						shareClose();
+					}
+				}
+
+				/**
+				  * 分享操作
+				  * @param {JSON} sb 分享操作对象s.s为分享通道对象(plus.share.ShareService)
+				  */
+				function shareAction(sb) {
+					if(!sb||!sb.s){
+						$.toast('无效的分享服务！',{ duration:'long', type:'div'});
+						return;
+					}
+					var msg={content:"" ,extra:{scene:sb.x}};
+			
+					msg.href=sb.href;
+					if(sb.title&&sb.title!=''){
+						msg.title=sb.title;
+					}
+					if(sb.content&&sb.content!=''){
+						msg.content=sb.content;
+					}
+					msg.thumbs=['_www/logo.png'];
+					if(sb.pictures&&sb.pictures!=''){
+						msg.pictures=sb.pictures;
+					}else{
+						msg.pictures=['_www/logo.png'];
+					}
+					
+			
+					// 发送分享
+					if(sb.s.authenticated){
+						shareMessage(msg, sb.s);
+					}else{
+						sb.s.authorize(function(){
+							shareMessage(msg,sb.s);
+						}, function(e){
+							$.toast('认证授权失败：'+e.code+' - '+e.message,{ duration:'long', type:'div'});
+						});
+					}
+				}
+				
+				/**
+				  * 发送分享消息
+				  * @param {JSON} msg
+				  * @param {plus.share.ShareService} s
+				  */
+				function shareMessage(msg, s){
+					s.send(msg, function(){
+						$.toast('分享到"'+s.description+'"成功！',{ duration:'long', type:'div'});
+					}, function(e){
+						$.toast('分享到"'+s.description+'"失败: '+JSON.stringify(e),{ duration:'long', type:'div'});
+					});
+					shareClose();
+				}
+				
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

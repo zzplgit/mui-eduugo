@@ -1,0 +1,721 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/video.css" rel="stylesheet"  />
+	</head>
+
+	<body>
+		<div class="video-object">
+    		<video id="edVideo" class="video-none" preload></video>
+			<div class="video-subtitle"></div>
+    		<div class="video-controls app-none">
+				<a class="video-control-btn video-btn-play"><img src="../images/play.png" /></a>
+    			<a class="video-control-btn mui-pull-right video-btn-full"><img src="../images/full_screen.png" /></a>
+				<div class="video-progressbar mui-progressbar">
+					<span></span>
+				</div>
+				<div class="video-progress-time">
+				   <span class="video-current">00:00</span>/<span class="video-duration">00:00</span>
+				</div>
+				<div class="mui-input-range">
+					<input type="range" min="0" max="100">
+				</div>
+    		</div>
+
+			<div class="video-play">
+				<img src="../images/video_details_01.png" />
+			</div>
+			<div class="video-loadding app-none">
+				<img src="../images/video_details_02.png" />
+			</div>
+			
+			<div class="video-msg app-none">
+				<img class="video-msg-img" src="../images/video_details_01.png"/>
+				<div class="video-msg-text video-line1"></div>
+				<div class="video-msg-text video-line2"></div>
+				<div class="video-msg-btn video-line3 app-none">
+					<button type="button" class="mui-btn">点击刷新</button>
+				</div>
+			</div>
+			
+			<div class="video-top">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<span class="video-title"></span>
+			</div>
+	    </div>
+	    
+		<div class="mui-content video-detail-content">
+			<div class="mui-table video-bar video-bar-review">
+				<img class="video-headerimg" src="../images/headerimg_placeholder.png"/>
+				<div id="videoCellInfo" class="mui-table-cell">
+					<p class="mui-h5 mui-ellipsis data-video-title"></p>
+					<p class="mui-h6 mui-ellipsis data-play-times"></p>
+				</div>
+				<div class="mui-table-cell video-segmented-control">
+					<div class="mui-segmented-control mui-segmented-control-primary">
+						<a class="mui-control-item mui-active video-control-ppt" name="ppt" href="#videoPpt">文档</a>
+						<a class="mui-control-item  video-control-chat" name="chat" href="#videoChat">问答</a>
+					</div>
+				</div>
+			</div>
+			<div class="mui-control-content mui-active">
+				<div class="video-line-slider mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				    <div class="mui-scroll"></div>
+				</div>
+				
+				<div class="mui-control-content mui-active" id="videoPpt">
+					<div class="video-line"></div>
+					<img class="video-ppt" src="" />
+				</div>
+				<div class="mui-control-content video-chat-content" id="videoChat">
+					<div class="mui-scroll-wrapper mui-fullscreen video-chat-scroll">
+						<div class="mui-scroll">
+				  			<ul class="mui-table-view mui-table-view-chevron"></ul>
+				  			<div class="mui-pull app-none">
+				  				<div class="mui-pull-loading mui-icon mui-spinner mui-visibility"></div>
+				  				<div class="mui-pull-caption mui-pull-caption-refresh">正在加载...</div>
+				  			</div>
+				  		</div>
+				 	</div>
+				  	<template id="chatCell">
+						<div class="mui-card">
+							<div class="mui-card-content">
+								<div class="mui-card-header mui-card-media">
+									<img class="video-header-img" src="../images/headerimg_placeholder.png" />
+									<div class="mui-media-body video-name"></div>
+								</div>
+								<div class="mui-card-content-inner video-text"></div>
+							</div>
+						</div>
+					</template>
+				</div>
+			</div>
+			<div class="video-bottom-bar app-none" style="z-index: 3;">
+				<form action="" class="video-bottom-form">
+					<div class="mui-input-row"><input id="videoMsg" type="text" /></div>
+					<div class="video-bottom-btn">
+						<img class="video-collection" src="../images/tb-weishoucang.png" />
+						<img class="video-btn-share" src="../images/tb-share.png" />
+					</div>
+				</form>
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/socket.io.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self, room, shareMsg, pageId, mask;
+				var contentRes;
+				var ppt, jsonSubtitle;
+				var pptIndex = subtitleIndex = null;
+				var video, progressbar;
+				var isCollection = false;
+				var hasLineTag = false;
+				
+				var pageSize = 10;
+				var pageNo = 1;
+				
+				function initPage(){
+					socket = null;
+					pageNo = 1;
+					isCollection = false;
+					jsonSubtitle = ppt = room = shareMsg = "";
+				 	pptIndex = subtitleIndex = null;
+					var chatDoc = document.querySelector(".video-chat-content .mui-table-view");
+		            chatDoc.innerHTML = "";
+		            doc.querySelector(".video-chat-content .mui-pull").classList.add("app-none");
+		            
+		            if(!video.paused) {
+						video.pause();
+		            }
+		            doc.querySelector(".video-btn-play img").src = "../images/play.png";
+		            doc.querySelector(".video-play").classList.remove("app-none");
+		            doc.querySelector(".video-loadding").classList.add("app-none");
+		            doc.querySelector(".video-top").classList.remove("app-none");
+				}
+				
+				function videoPlay(){
+					if(video.paused) {
+						videoP();
+					} else {
+						videoPause();
+					}
+				}
+				
+				function videoP(){
+					if(video.paused) {
+						var nt = plus.networkinfo.getCurrentType();
+						switch (nt){
+							case plus.networkinfo.CONNECTION_ETHERNET:
+							case plus.networkinfo.CONNECTION_WIFI:
+								doc.querySelector(".video-msg").classList.add("app-none");
+								doc.querySelector(".video-top").classList.add("app-none");
+								doc.querySelector(".video-btn-play img").src = "../images/video_pause.png";
+								video.play();
+							break; 
+							case plus.networkinfo.CONNECTION_CELL2G:
+							case plus.networkinfo.CONNECTION_CELL3G:
+							case plus.networkinfo.CONNECTION_CELL4G:
+								$.confirm("你已在移动网络下！使用流量继续观看？", "提示", ["继续播放", "暂不播放"], function(res){
+									if(res.index == 0){
+										doc.querySelector(".video-msg").classList.add("app-none");
+										doc.querySelector(".video-btn-play img").src = "../images/video_pause.png";
+										video.play();
+									}
+								}, "div");
+							break; 
+							default:
+								//alert("Not networks!"); 
+								doc.querySelector(".video-msg-img").src = "../images/video_details_03.png";
+								doc.querySelector(".video-line1").textContent = "网络异常，请刷新一下吧～";
+								doc.querySelector(".video-line2").textContent = "";
+								doc.querySelector(".video-msg").classList.remove("app-none");
+								doc.querySelector(".video-msg-btn").classList.remove("app-none");
+								doc.querySelector(".video-top").classList.remove("app-none");
+							break;
+						}
+					}
+				}
+				
+				function videoPause(){
+					if(!video.paused) {
+						doc.querySelector(".video-btn-play img").src = "../images/play.png";
+						video.pause();
+					}
+				}
+				
+				function fullScreen(){
+					var isFullscreen = plus.navigator.isFullscreen();
+					if(isFullscreen){
+						//document.webkitCancelFullScreen();
+						plus.navigator.setFullscreen( false );
+						//plus.screen.unlockOrientation();
+						plus.screen.lockOrientation( 'portrait-primary' );
+						self.setStyle({
+						    scrollIndicator: 'vertical'
+						});
+						doc.querySelector(".video-detail-content").classList.remove("app-none");
+						video.style.height = "210px";
+						doc.querySelector(".video-object .video-controls").style.bottom = "-210px";
+					}else{
+						plus.navigator.setFullscreen( true );
+						plus.screen.lockOrientation('landscape');
+						self.setStyle({
+						    scrollIndicator: 'none'
+						});
+						doc.querySelector(".video-detail-content").classList.add("app-none");
+						//设置高度
+						var height = plus.screen.resolutionWidth;
+						video.style.height = (height+1)+"px";
+						doc.querySelector(".video-object .video-controls").style.bottom = "-"+(height+1)+"px";
+					}
+				}
+				
+				$.ready(function(){
+					
+					var width = document.documentElement.clientWidth || document.body.clientWidth;
+					var nWidth = width-220;
+					mui("#videoCellInfo")[0].style.cssText = " width:"+nWidth+"px";
+					
+					video = document.getElementById('edVideo');
+					progressbar = $(".video-progressbar");
+					progressbar.progressbar({progress:0}).show();
+					
+					doc.querySelector(".video-play img").addEventListener("tap", function(){
+						video.classList.remove("video-none");
+						doc.querySelector(".video-loadding").classList.remove("app-none");
+						doc.querySelector(".video-play").classList.add("app-none");
+						doc.querySelector(".video-top").classList.add("app-none");
+						videoPlay();
+					});
+
+
+					video.addEventListener('timeupdate', function(e) {
+						//阻止冒泡事件
+						e.preventDefault();
+						if(doc.querySelector(".video-loadding").classList.contains('app-none')!=true){
+							doc.querySelector(".video-loadding").classList.add("app-none");
+						}
+						if(doc.querySelector(".video-controls").classList.contains('app-none')!=true){
+
+							var cMinutes = "000000000" + parseInt(video.currentTime / 60, 10);
+							var cSeconds = "000000000" + parseInt(video.currentTime % 60, 10);
+							doc.querySelector(".video-current").textContent = cMinutes.substr(cMinutes.length-2)+":"+cSeconds.substr(cSeconds.length-2);
+							
+							var dMinutes = "000000000" + parseInt(video.duration / 60, 10);
+							var dSeconds = "000000000" + parseInt(video.duration % 60, 10);
+							doc.querySelector(".video-duration").textContent = dMinutes.substr(dMinutes.length-2)+":"+dSeconds.substr(dSeconds.length-2);
+							
+							var pro = parseInt((video.currentTime / video.duration)*100, 10);
+							progressbar.progressbar().setProgress(pro);
+						}
+						var currentTime = parseInt(video.currentTime, 10);
+						if(ppt){
+							for(var i in ppt){
+								if(i != pptIndex && i == (ppt.length -1) && currentTime >= ppt[i].second){
+									console.info(ppt[i].url);
+									doc.querySelector(".video-ppt").src = ppt[i].url;
+									console.info(ppt[i].url);
+									pptIndex = i;
+									break;
+								}
+								var lastIndex = parseInt(i) + 1;
+								if(i != pptIndex && ppt[lastIndex] && currentTime >= ppt[i].second && currentTime < ppt[lastIndex].second){
+									console.info(ppt[i].url);
+									doc.querySelector(".video-ppt").src = ppt[i].url;
+									pptIndex = i;
+									break;
+								}
+							}
+						}
+						if(jsonSubtitle){
+							for(var i in jsonSubtitle){
+								if(subtitleIndex != i && currentTime >= jsonSubtitle[i].startTime && currentTime < jsonSubtitle[i].stopTime){
+									//TODO  str.replace(/Microsoft/g, "jb51.net")
+									
+									var text = jsonSubtitle[i].text.replace("\r\n", "</br>")
+									
+									doc.querySelector(".video-subtitle").innerHTML = text;
+									subtitleIndex = i;
+									break;
+								}
+							}
+						}
+						
+						
+					});
+					
+					video.addEventListener("tap", function(){
+						if(doc.querySelector(".video-controls").classList.contains('app-none')==true){
+							doc.querySelector(".video-controls").classList.remove("app-none");
+							doc.querySelector(".video-top").classList.remove("app-none");
+							setTimeout(function(){
+								if(doc.querySelector(".video-controls").classList.contains('app-none')!=true){
+									doc.querySelector(".video-controls").classList.add("app-none");
+									doc.querySelector(".video-top").classList.add("app-none");
+								}
+							},5000);
+					    }else{
+					    	doc.querySelector(".video-controls").classList.add("app-none");
+					    	doc.querySelector(".video-top").classList.add("app-none");
+					    }
+					});
+					
+					doc.querySelector(".video-btn-play").addEventListener("tap", function(){
+						videoPlay();
+						return false;
+					});
+
+				    doc.querySelector(".video-object .mui-input-range input").addEventListener('input',function(e){
+						//阻止冒泡事件
+						e.preventDefault();
+						doc.querySelector(".video-loadding").classList.remove("app-none");
+						
+				        var currentTime = parseInt( (this.value/100)*video.duration, 10);
+						var cMinutes = "000000000" + parseInt(currentTime / 60, 10);
+						var cSeconds = "000000000" + parseInt(currentTime % 60, 10);
+						doc.querySelector(".video-current").textContent = cMinutes.substr(cMinutes.length-2)+":"+cSeconds.substr(cSeconds.length-2);
+				        
+			        	video.currentTime = currentTime;
+			        	progressbar.progressbar().setProgress(this.value);
+				    });
+
+					doc.querySelector(".video-btn-full").addEventListener("tap", function(){
+						fullScreen();
+					});
+				});
+				
+				$.plusReady(function(){
+					var old_back = $.back;
+					$.back = function(){
+						var isFullscreen = plus.navigator.isFullscreen();
+						if(isFullscreen){
+							fullScreen();
+						}else{
+							old_back();
+						}
+					}
+					
+					self = plus.webview.currentWebview();
+					self.setStyle({
+					    videoFullscreen: 'landscape'
+					});
+					
+					mask = plus.nativeUI.showWaiting();
+					self.setStyle({mask:"rgba(0,0,0,0.5)"});
+					getContent(self.videoId);
+					
+					pullfreshFun(pageId);
+					
+					doc.querySelector(".video-bottom-form").addEventListener("submit", function(e){
+						var word = doc.getElementById("videoMsg").value;
+						//阻止冒泡事件
+						e.preventDefault();
+						doc.getElementById("videoMsg").blur();
+						doc.getElementById("videoMsg").value = "";
+						sendChat(word);
+					});
+					
+					doc.addEventListener('touchstart',function(e){
+						doc.getElementById("videoMsg").blur();
+					});
+					
+					doc.getElementById("videoMsg").addEventListener("focus", function(e){
+						//阻止冒泡事件
+						e.preventDefault();
+						if(!app.isLogin()){
+							app.hrefUrl("login_hub.html");
+							return false;
+						}
+					});
+					
+					doc.querySelector(".video-btn-share").addEventListener("tap", function(){
+						if(shareMsg){
+							app.share(shareMsg);
+						}
+					});
+
+					doc.querySelector('.video-chat-scroll').addEventListener('scroll',function(e){
+						var sh = this.scrollHeight;
+						var st = this.scrollTop;
+						var ch = this.clientHeight;
+						if(st+ch >= sh){
+							pullfreshFun(pageId);
+						}
+					});
+					
+					$(".video-segmented-control div").on("tap", "a", function(e){
+						if(this.name == "chat"){
+							doc.querySelector(".video-bottom-bar").classList.remove("app-none");
+						}else{
+							doc.querySelector(".video-bottom-bar").classList.add("app-none");
+						}
+					});
+					
+					doc.addEventListener("netchange", function() {
+						if(!video.paused){
+							var nt = plus.networkinfo.getCurrentType();
+							videoPause();
+							switch (nt){
+								case plus.networkinfo.CONNECTION_ETHERNET:
+								case plus.networkinfo.CONNECTION_WIFI:
+									$.toast('你已在使用Wi-Fi网络，放心观看吧！',{ duration:'short', type:'div'});
+									videoP();
+								break; 
+								case plus.networkinfo.CONNECTION_CELL2G:
+								case plus.networkinfo.CONNECTION_CELL3G:
+								case plus.networkinfo.CONNECTION_CELL4G:
+									$.confirm("你已在移动网络下！使用流量继续观看？", "提示", ["继续播放", "暂不播放"], function(res){
+										if(res.index == 0){
+											videoP();
+										}
+									}, "div");
+								break; 
+								default:
+									//alert("Not networks!"); 
+									doc.querySelector(".video-msg-img").src = "../images/video_details_03.png";
+									doc.querySelector(".video-line1").textContent = "网络异常，请刷新一下吧～";
+									doc.querySelector(".video-line2").textContent = "";
+									doc.querySelector(".video-msg").classList.remove("app-none");
+									doc.querySelector(".video-msg-btn").classList.remove("app-none");
+									doc.querySelector(".video-top").classList.remove("app-none");
+								break;
+							}
+						}
+					});
+					
+					doc.querySelector(".video-msg-btn").addEventListener("tap", function(){
+						doc.querySelector(".video-loadding").classList.remove("app-none");
+						video.load();
+						videoP();
+					});
+					
+				});
+				
+				
+				function getContent(id){
+					pageId = id;
+					
+					var state = app.getState();
+					var token = state.token || '';
+					var url = app.apiHost+"/video/video-info";
+					
+//					console.info(url);
+//					console.info(id);
+					
+					var param = {'id':id, 'token':token};
+					$.post(url, param, function(res){
+						if(res.code != 1){
+							return;
+						}
+						
+						mask.close();
+						self.setStyle({mask:"none"});
+						
+						initPage();
+						_getContent(res, 0);
+						pullfreshFun(pageId);
+						
+						if(!hasLineTag){
+							var lineTag = doc.querySelector(".video-line-slider .mui-scroll");
+							var fragment = document.createDocumentFragment();
+							var a;
+							lineTag.innerHTML = "";
+							for(var i in res.data.sersList){
+								a = document.createElement("a");
+								a.name = "tag_"+res.data.sersList[i].video_id;
+								a.textContent = parseInt(i)+1;
+								if(res.data.sersList[i].video_id != pageId){
+									a.className = "mui-control-item";
+								}else{
+									a.className = "mui-control-item mui-active";
+								}
+								a.addEventListener("tap", function(){
+									var videoId = this.name.replace("tag_", "");
+									getContent(videoId);
+									//app.hrefUrl("video_review.html", {videoId: videoId});
+								});
+								
+								fragment.appendChild(a);
+							}
+							lineTag.insertBefore(fragment, lineTag.firstChild);
+							
+							doc.querySelector(".video-collection").addEventListener("tap", function(){
+								collection(pageId);
+							});
+							hasLineTag = true;
+						}
+						
+						
+					}, "json");
+				}
+				
+				function _getContent(res, listIndex){
+					if(res.code == 1){
+						room = res.data.sersList[listIndex].uuid;
+						
+						doc.querySelector(".video-collection").src = "../images/tb-weishoucang.png";
+						if(res.data.store == 'true'){
+							isCollection = true;
+							doc.querySelector(".video-collection").src = "../images/tb-yishoucang.png";
+						}
+						doc.querySelector(".video-object video").poster = res.data.sersList[listIndex].cover;
+						doc.querySelector(".video-object .video-play").style.backgroundImage="url("+res.data.sersList[listIndex].cover+")";
+						doc.querySelector(".video-object video").src = res.data.sersList[listIndex].video_url;
+						
+						//TODO 中文特殊字符
+						console.info(res.data.sersList[listIndex].video_url);
+						console.info(decodeURI(res.data.sersList[listIndex].video_url));
+						
+						video.addEventListener("error", function(){
+							//video.error.code 1.用户终止 2.网络错误 3.解码错误 4.URL无效 TODO
+							console.info(video.error.code);
+							if(video.error.code != 2){
+								doc.querySelector(".video-msg-img").src = "../images/video_details_06.png";
+								doc.querySelector(".video-line1").textContent = "加载失败了，请稍后重试";
+								doc.querySelector(".video-line2").textContent = "";
+								doc.querySelector(".video-msg").classList.remove("app-none");
+								doc.querySelector(".video-top").classList.remove("app-none");
+								//doc.querySelector(".video-msg-btn").classList.remove("app-none");
+							}
+						});
+						
+						
+						ppt = res.data.sersList[listIndex].pptUrl;
+						jsonSubtitle = res.data.sersList[listIndex].json_subtitle;
+						doc.querySelector(".data-play-times").textContent = res.data.sersList[listIndex].play_times+"人已看";
+						doc.querySelector(".video-ppt").src = res.data.sersList[listIndex].cover;
+						doc.querySelector(".video-title").textContent = res.data.sersList[listIndex].title;
+						if(res.data.sersList[listIndex].speaker[0]){
+							doc.querySelector(".video-headerimg").src = res.data.sersList[listIndex].speaker[0].image;
+							doc.querySelector(".data-video-title").textContent = res.data.sersList[listIndex].speaker[0].name;
+						}
+						
+						shareMsg = {
+							title:res.data.sersList[listIndex].title,
+							pictures:[res.data.sersList[listIndex].cover],
+							href:res.data.shareUrl,
+							content: res.data.sersList[listIndex].description
+						};
+						
+			            socket = io.connect('http://node.service.eduugo.com/chat');
+			            var enter = {"room": room};
+			            var chatDoc = document.querySelector(".video-chat-content .mui-table-view");
+			            var state = app.getState();
+			            if(state.user){
+			            	enter.uid = state.user.id || '';
+			            	enter.nickname = state.user.name || '';
+			            	enter.avatar = state.user.avatar || '';
+			            	enter.role = state.user.role || '';
+			        	}
+			          	socket.emit('enter', enter);
+						socket.on('get message', function (data) {
+							var msgData = [{
+								'comment_id': data.comment_id,
+								'word': data.content,
+								'fuserInfo': {
+									'id': data.uid,
+									'name': data.nickname,
+									'avatar': data.avatar,
+									'role': data.role
+								}
+							}];
+							chatDoc.insertBefore(createFragment(msgData), chatDoc.firstChild);
+						});
+					}
+				}
+				
+				
+				function sendChat(word){
+					var state = app.getState();
+					var token = state.token || '';
+					if(!token){
+						mui.openWindow({
+						    url: "login_hub.html",
+						    show:{duration: 200}
+						});
+						return;
+					}
+					
+					if(!word){
+						$.toast("请输入内容", {});
+						return;
+					}
+					var url = app.apiHost+"/video/add-comment";
+					var param = {
+						'token': token,
+						'id': pageId,
+						'word': word
+					};
+					$.post(url, param, function(res){
+						if(res.code == 1){
+							var send = {
+								'room': room,
+								'data': {
+									"uid": res.data.fuserInfo.id,
+									"nickname": res.data.fuserInfo.name,
+									"avatar": res.data.fuserInfo.avatar,
+									"role": res.data.fuserInfo.role,
+									"content": word,
+									"comment_id": res.data.comment_id
+								}
+							};
+							socket.emit('send message', send);
+						}else{
+							var msg = res.message || "发送失败";
+							$.toast(msg, {});
+						}
+					}, "json");
+				}
+				
+				function collection(id){
+					var msg;
+					var state = app.getState();
+					var token = state.token || '';
+					if(!token){
+						mui.openWindow({
+						    url: "login_hub.html",
+						    show:{duration: 200}
+						});
+						return;
+					}
+					if(isCollection){
+						var url = app.apiHost+"/video/del-store";
+						var src = "../images/tb-weishoucang.png";
+						var suc = false;
+						msg = "已取消收藏";
+					}else{
+						var url = app.apiHost+"/video/add-store";
+						var src = "../images/tb-yishoucang.png";
+						var suc = true;
+						msg = "已收藏";
+					}
+					var param = {
+						'token': token,
+						'type': 4,
+						'typeId': id
+					};
+					$.post(url, param, function(res){
+						if(res.code == 1){
+							doc.querySelector(".video-collection").src = src;
+							isCollection = suc;
+							$.toast(msg, {});
+						}else{
+							msg = res.message || "收藏失败";
+							$.toast(msg, {});
+						}
+					}, "json");
+				}
+				
+				function getChat(id){
+					var pull = doc.querySelector(".video-chat-content .mui-pull");
+					var url = app.apiHost+"/video/get-comment";
+					var param = {'id':id, pageNo:pageNo, pageSize:pageSize};
+					
+					if(pull.classList.contains('app-none')==true){
+						pull.classList.remove("app-none");
+					}else{
+						return;
+					}
+					
+					$.getJSON(url, param, function(res){
+						if(res.code == 1){
+							var chatDoc = document.querySelector(".video-chat-content .mui-table-view");
+							chatDoc.insertBefore(createFragment(res.data.data), chatDoc.lastChild);
+							pageNo++;
+							if(res.data.pageMaxNum >= pageNo){
+								pull.classList.add("app-none");
+							}else{
+					  			pull.querySelector(".mui-pull-loading").classList.add("app-none");
+					  			pull.querySelector(".mui-pull-caption").textContent = "没有更多数据了";
+							}
+						}else{
+				  			pull.querySelector(".mui-pull-loading").classList.add("app-none");
+				  			pull.querySelector(".mui-pull-caption").textContent = "没有更多数据了";
+						}
+					});
+				}
+				
+				function createFragment(data){
+					var state = app.getState();
+					var fragment = document.createDocumentFragment();
+					var div;
+					for (var i = 0; i < data.length; i++) {
+						div = document.getElementById("chatCell").content.cloneNode(true);
+						if(data[i].fuserInfo.avatar){
+							var imgUrl = data[i].fuserInfo.avatar;
+							var imgUrl = imgUrl.replace("images//", "images/");
+							div.querySelector(".video-header-img").src = imgUrl;
+						}
+						if(state.user && state.user.id && state.user.id == data[i].fuserInfo.id){
+							div.querySelector(".video-name").textContent = '我:';
+							div.querySelector(".video-name").style.textAlign = "right";
+							div.querySelector(".video-header-img").style.float = "right";
+						}else{
+							div.querySelector(".video-name").textContent = data[i].fuserInfo.name+':';
+						}					
+						div.querySelector(".video-text").textContent = data[i].word;
+						fragment.appendChild(div);
+					}
+					
+					return fragment;
+				}
+				
+				function pullfreshFun(id){
+					getChat(id);
+				}
+				
+				
+			}(mui, document));
+			
+		</script>
+	</body>
+
+</html>

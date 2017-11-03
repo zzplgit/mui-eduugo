@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">报名</h1>
+		    <div class="mui-icon mui-pull-right">
+		    	<img class="app-share" src="../images/bt-share-click2.png" />
+		    </div>
+		</header>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self;
+				$.plusReady(function(){
+					var subUrl;
+					self = plus.webview.currentWebview();
+					
+					getContent();
+					
+					var subpage_style = {
+						top: '64px',
+						bottom: '0px'
+					};
+					subUrl = self.subUrl;
+					var state = app.getState();
+					if(state.token){
+						subUrl += "&token="+state.token;
+					}
+					
+					var subWs = plus.webview.getWebviewById("sub_video_enroll.html");
+					if(subWs){
+						subWs.close();
+						console.info(subUrl);
+					}
+					var sub = plus.webview.create(subUrl, "sub_video_enroll.html", subpage_style);
+					self.append(sub);
+					var mask = plus.nativeUI.showWaiting();
+					self.setStyle({mask:"rgba(0,0,0,0.5)"});
+					sub.onloaded=function(){
+						mask.close();
+						self.setStyle({mask:"none"});
+					};
+					
+					app.injection(sub, self.id, "UserStatus", ["status"], "{'status':status}");
+					window.addEventListener("UserStatus", function(event){
+						console.info("status: "+event.detail.status);
+						if(0 == event.detail.status){
+							app.hrefUrl("login_hub.html");
+						}
+					}, false);
+							
+					app.injection(sub, self.id, "LiveToStart", ["id"], "{'id':id}");
+					window.addEventListener("LiveToStart", function(event){
+						console.info("id: "+event.detail.id);
+						app.hrefUrl("video_live.html", {videoId: event.detail.id});
+					}, false);
+					
+				});
+				
+				
+				function getContent(){
+					var url = app.apiHost+"/live/live-info";
+					var param = {'id':self.videoId};
+					$.post(url, param, function(res){
+						if(res.code == 1){
+							var shareMsg = {
+								title:res.data.model.title,
+								content: "快来围观直播吧! ",
+								pictures: [res.data.model.cover],
+								href:res.data.shareUrl,
+							};
+							
+							doc.querySelector(".app-share").addEventListener("tap", function(){
+								//var href = "http://weixin.eduugo.com/index.php?r=live/view&id="+self.videoId;
+								app.share(shareMsg);
+							});
+						}
+					}, "json");
+				}
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

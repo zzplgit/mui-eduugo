@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet">
+		<link href="../css/video.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar app-bar-top">
+			<span>
+				<img src="../images/eduugo.png" />
+			</span>
+		</header>
+
+		<div class="video-content-tab mui-slider-indicator mui-segmented-control mui-segmented-control-inverted app-slider-indicator">
+		    <div>
+		        <a class="mui-control-item mui-active">最新</a>
+		        <a class="mui-control-item">直播</a>
+		        <a class="mui-control-item">回顾</a>
+		        <a class="mui-control-item">精选</a>
+		    </div>
+		</div>
+		
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper video-content">
+			<div class="mui-scroll">
+				<div id="slider" class="mui-slider app-slider-pic video-none" >
+					<div class="mui-slider-group mui-slider-loop">
+						<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+						<div class="mui-slider-item mui-slider-item-duplicate app-slider-pic-last">
+							<a href="#"><img src=""></a>
+						</div>
+						<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+						<div class="mui-slider-item mui-slider-item-duplicate app-slider-pic-first">
+							<a href="#"><img src=""></a>
+						</div>
+					</div>
+					<div class="mui-slider-indicator"></div>
+				</div>
+				<ul class="mui-table-view video-table"></ul>
+			</div>
+		</div>
+		
+		<template id="videoCell">
+			<li class="mui-table-view-cell video-cell">
+				<div class="video-cell-item">
+					<img src="../images/shuijiao.jpg" class="video-cell-item-pic"/>
+					<div class="video-cell-item-explain">
+						<div class="video-portrait">
+							<img src="../images/headerimg_placeholder.png" />
+						</div>
+						<div class="video-left-block">
+							<div class="video-name"><nobr></nobr></div>
+						</div>
+						<div class="video-right-block">
+							<div class="video-time">
+								<nobr></nobr>
+							</div>
+						</div>
+					</div>
+					<div class="video-status"></div>
+					<div class="video-title">
+						<div class="video-toptitle"></div>
+						<div class="video-subtitle"></div>
+					</div>
+				</div>
+			</li>
+		</template>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			var video = {
+				_self: null,
+				pageNo: 1,
+				type: '最新',
+				pageSize: 10,
+				pulldownRefresh: function(){
+					video.pageNo = 1;
+					video.type = document.querySelector(".app-slider-indicator .mui-active").text;
+					mui('#pullrefresh').pullRefresh().refresh(true);
+					document.querySelector(".video-table").innerHTML = "";
+					video.getVideoList();
+				},
+				pullupRefresh: function(){
+					video.getVideoList();
+				},
+				
+				getVideoList: function(){
+					var mask = new app.mask();
+					var url = app.apiHost+"/live/get-live-by-type";
+					var param = {'pageNo':video.pageNo, 'type':video.type, 'pageSize':video.pageSize};
+					mask.show();
+					mui.getJSON(url, param, function(data){
+							mask.close();
+							var maxPage = 0;
+							if(data && data.code == 1){
+								var ul = document.querySelector(".video-table");
+								ul.insertBefore(video.createFragment(data.data.data), ul.lastChild);
+								video.pageNo++;
+								if(maxPage == 0){
+									maxPage = Math.ceil(data.data.pageMaxNum/video.pageSize);
+								}
+								if(maxPage >= video.pageNo){
+									mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+								}else{
+									mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+								}
+							}else{
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							}
+							video._self.endPullToRefresh();
+						}
+					);
+				},
+				createFragment: function(data){
+					var fragment = document.createDocumentFragment();
+					var li;
+					for (var i = 0; i < data.length; i++) {
+						li = document.getElementById("videoCell").content.cloneNode(true);
+						li.querySelector(".video-cell-item-pic").src = data[i].cover;
+						if(data[i].speaker && data[i].speaker[0]){
+							if(data[i].speaker[0].image && data[i].speaker[0].image != "http://cdn.dev.eduugo.com//images/"){
+								li.querySelector(".video-portrait img").src = data[i].speaker[0].image;
+							}
+							li.querySelector(".video-name nobr").textContent = data[i].speaker[0].name;
+						}
+						if(data[i].start_time){
+							li.querySelector(".video-time nobr").innerHTML = '<img src="../images/home_list_time_icon.png" />'+app.formatDate(data[i].start_time);
+						}
+						if(data[i].description){
+							//TODO
+							//li.querySelector(".video-toptitle").textContent = data[i].description;
+						}
+						var videoStatus = li.querySelector(".video-status");
+						var videoHref = li.querySelector(".video-cell-item");
+						videoHref.name = "video-id-"+(data[i].video_id || data[i].live_id);
+						switch(data[i].play_type){
+							case 1:
+								if(data[i].status && data[i].status==1){
+									videoStatus.classList.add("video-live");
+									videoStatus.textContent = "直播";
+									videoHref.addEventListener('tap', function(){
+										var videoId = this.name.replace("video-id-", "");
+										app.hrefUrl("video_live.html", {videoId: videoId});
+									});
+								}else{
+									videoStatus.classList.add("video-enroll");
+									videoStatus.textContent = "报名";
+									videoHref.addEventListener('tap', function(){
+										var videoId = this.name.replace("video-id-", "");
+										var token = video.getToken();
+										var enrollUrl = app.webHost+"live/view&id="+videoId;
+										app.hrefUrl("video_enroll.html", {subUrl: enrollUrl, videoId:videoId});
+									});
+								}
+							break;
+							case 4:
+								videoStatus.classList.add("video-review");
+								videoStatus.textContent = "回顾";
+								videoHref.addEventListener('tap', function(){
+									var videoId = this.name.replace("video-id-", "");
+									app.hrefUrl("video_review.html", {videoId: videoId});
+								});
+							break;
+						}
+						fragment.appendChild(li);
+					}
+					return fragment;
+				},
+				getSliderPic: function(){
+					var url = app.apiHost+"/site/get-app-carousel";
+					var param = {};
+					mui.getJSON(url, param, function(data){
+							if(data && data.code == 1){
+								var token = video.getToken();
+								var loop = document.querySelector("#slider .mui-slider-loop");
+								var indicator = document.querySelector("#slider .mui-slider-indicator");
+								var loopFragment = document.createDocumentFragment();
+								var indicatorFragment = document.createDocumentFragment();
+								var loopDiv, indicatorDiv;
+								
+								//轮播暂定最多4张
+								for(var i=0; i<data.data.length; i++){
+									if(i > 3){
+										break;
+									}
+									var ex;
+									indicatorDiv = document.createElement('div');
+									indicatorDiv.className = 'mui-indicator';
+									if(i == 0){
+										ex = document.querySelector(".app-slider-pic-first img");
+										document.querySelector(".app-slider-pic-first img").src = data.data[i].cover;
+										document.querySelector(".app-slider-pic-first img").name = 'video-id-'+data.data[i].type_id;
+										indicatorDiv.className = 'mui-indicator mui-active';
+									}
+									
+									if(i == (data.data.length-1)){
+										ex = document.querySelector(".app-slider-pic-last img");
+										document.querySelector(".app-slider-pic-last img").src = data.data[i].cover;
+										document.querySelector(".app-slider-pic-last img").name = 'video-id-'+data.data[i].type_id;
+									}
+									loopDiv = document.createElement('div');
+									loopDiv.className = 'mui-slider-item';
+									
+
+									if(data.data[i].url){
+										loopDiv.innerHTML = '<a name="video-id-'+data.data[i].type_id+'" href="#"><input type="hidden" class="h5Href" value="'+data.data[i].url+'" /><img src="'+data.data[i].cover+'"></a>';
+										
+										loopDiv.querySelector("a").addEventListener('tap', function(e){
+											e.preventDefault();
+											var url = this.querySelector(".h5Href").value;
+											if(url == app.webHost+"lingbao"){
+												app.hrefUrl("special_lingbao.html");
+											}else{
+												app.createHeader({subUrl: url, token:true, h5: true});
+											}
+										});
+										if(ex){
+											ex.addEventListener('tap', function(e){
+												e.preventDefault();
+												var url = this.querySelector(".h5Href").value;
+												if(url == app.webHost+"lingbao"){
+													app.hrefUrl("special_lingbao.html");
+												}else{
+													app.createHeader({subUrl: url, token:true, h5: true});
+												}
+											});
+										}
+									}else{
+										loopDiv.innerHTML = '<a name="video-id-'+data.data[i].type_id+'" href="#"><img src="'+data.data[i].cover+'"></a>';
+										switch(data.data[i].type){
+											case "1":
+												if(data.data[i].status && data.data[i].status==1){
+													loopDiv.querySelector("a").addEventListener('tap', function(){
+														var videoId = this.name.replace("video-id-", "");
+														app.hrefUrl("video_live.html", {videoId: videoId});
+													});
+													if(ex){
+														ex.addEventListener('tap', function(){
+															var videoId = this.name.replace("video-id-", "");
+															app.hrefUrl("video_live.html", {videoId: videoId});
+														});
+													}
+												}else{
+													loopDiv.querySelector("a").addEventListener('tap', function(){
+														var videoId = this.name.replace("video-id-", "");
+														var token = video.getToken();
+														var enrollUrl = app.webHost+"live/view&id="+videoId
+														app.hrefUrl("video_enroll.html", {subUrl: enrollUrl, videoId:videoId});
+													});
+													if(ex){
+														ex.addEventListener('tap', function(){
+															var videoId = this.name.replace("video-id-", "");
+															var token = video.getToken();
+															var enrollUrl = app.webHost+"live/view&id="+videoId
+															app.hrefUrl("video_enroll.html", {subUrl: enrollUrl, videoId:videoId});
+														});
+													}
+												}
+											break;
+											case "4":
+												loopDiv.querySelector("a").addEventListener('tap', function(){
+													var videoId = this.name.replace("video-id-", "");
+													app.hrefUrl("video_review.html", {videoId: videoId});
+												});
+												if(ex){
+													ex.addEventListener('tap', function(){
+													var videoId = this.name.replace("video-id-", "");
+													app.hrefUrl("video_review.html", {videoId: videoId});
+													});
+												}
+											break;
+										}
+									}
+									loopFragment.appendChild(loopDiv);
+									indicatorFragment.appendChild(indicatorDiv);
+								}
+								loop.insertBefore(loopFragment, loop.querySelector(".app-slider-pic-first"));
+								indicator.insertBefore(indicatorFragment, indicator.lastChild);
+								document.getElementById("slider").classList.remove("video-none");
+								mui("#slider").slider({
+									interval: 3000
+								});
+							}
+						}
+					);
+				},
+				getToken: function(){
+					var state = app.getState();
+					if(state.token){
+						return state.token;
+					}
+					return;
+				}
+			};
+			
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					up: {
+						auto: true,
+						contentrefresh: '正在加载...',
+						contentnomore: '已经全部加载完成',
+						callback: video.pullupRefresh
+					}
+				}
+			});
+			mui.plusReady(function(){
+				video._self = plus.webview.currentWebview();
+				video._self.setPullToRefresh({
+					support: true,
+					height: 100,
+					range: '100px',
+					style: 'circle',
+					offset: '1px'
+				}, video.pulldownRefresh);
+				
+				mui(".app-slider-indicator").on('tap', '.mui-control-item', function(){
+					video.pageNo = 1;
+					video.type = this.text;
+					if(video.type == "最新"){
+						document.getElementById("slider").classList.remove("video-none");
+					}else{
+						document.getElementById("slider").classList.add("video-none");
+					}
+					mui('#pullrefresh').pullRefresh().refresh(true);
+					document.querySelector(".video-table").innerHTML = "";
+					video.getVideoList();
+				});
+				
+				video.getSliderPic();
+				
+			});
+			
+			
+
+		</script>
+	</body>
+
+</html>

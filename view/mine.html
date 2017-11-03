@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/mine.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav mine-bar-top">
+			<div class="mui-title">我的</div>
+			<div class="mui-btn mui-pull-right"></div>
+			<div class="mine-portrait">
+				<img class="mine-avatar" src="../images/headerimg_placeholder.png" />
+				<div class="mine-edit">
+					<img src="../images/icon_edit.png" />
+				</div>
+				<div class="mine-name mui-ellipsis"></div>
+			</div>
+		</header>
+		<div class="mui-content">	
+			<ul class="mui-table-view">
+				<!--
+		        <li class="mui-table-view-cell">
+		        	<div class="mui-table mui-navigate-right">
+		        		<img class="mine-icon" src="../images/tb-mine-course.png" />
+		        		<div class="mui-table-cell mui-col-xs-10 mine-cell">
+		        			<span>我的课程</span>
+		        		</div>
+		        		<div class="mui-table-cell mui-col-xs-4 mui-text-right">
+		        			<span class="mui-badge mui-badge-danger">new</span>
+		        		</div>
+		        	</div>
+		        </li>
+		        -->
+		        <li class="mui-table-view-cell">
+		        	<a class="mine-href" href="mine_notice.html">
+			        	<div class="mui-table mui-navigate-right">
+			        		<img class="mine-icon" src="../images/tb-xiaoxitongzhi.png" />
+			        		<div class="mui-table-cell mui-col-xs-10 mine-cell">
+			        			<span>消息通知</span>
+			        		</div>
+			        		<div class="mui-table-cell mui-col-xs-4 mui-text-right">
+			        			<!--<span class="mui-badge app-badge-saob">99</span>-->
+			        		</div>
+			        	</div>
+		        	</a>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<a class="mine-href" href="mine_collection.html">
+			        	<div class="mui-table mui-navigate-right">
+			        		<img class="mine-icon" src="../images/tb-wodeshoucang.png" />
+			        		<div class="mui-table-cell mui-col-xs-10 mine-cell">
+			        			<span>我的收藏</span>
+			        		</div>
+			        		<div class="mui-table-cell mui-col-xs-4 mui-text-right"></div>
+			        	</div>
+		        	</a>
+		        </li>
+		        <li class="mui-table-view-cell mine-share">
+		        	<div class="mui-table mui-navigate-right">
+		        		<img class="mine-icon" src="../images/tb-fenxiangyingyon.png" />
+		        		<div class="mui-table-cell mui-col-xs-10 mine-cell">
+		        			<span>分享应用</span>
+		        		</div>
+		        		<div class="mui-table-cell mui-col-xs-4 mui-text-right"></div>
+		        	</div>
+		        </li>
+		        <li class="mui-table-view-cell">
+		        	<a class="mine-href" href="feedback.html">
+			        	<div class="mui-table mui-navigate-right">
+			        		<img class="mine-icon" src="../images/tb-yijianfankui.png" />
+			        		<div class="mui-table-cell mui-col-xs-10 mine-cell">
+			        			<span>意见反馈</span>
+			        		</div>
+			        		<div class="mui-table-cell mui-col-xs-4 mui-text-right"></div>
+			        	</div>
+		        	</a>
+		        </li>
+		    </ul>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				$.init();
+				$.plusReady(function(){
+					getInfo();
+					$(".mui-table-view-cell").on("tap", "a", function(e){
+						var title;
+						var targetTab = this.getAttribute('href');
+						if(targetTab == "feedback.html") {
+							app.hrefUrl(targetTab);
+						}else{
+							title = this.querySelector(".mine-cell span").textContent;
+							app.createHeader({subUrl: targetTab, title: title});
+						}
+					});
+
+					doc.querySelector(".mui-pull-right").addEventListener("tap", function(){
+						app.createHeader({subUrl: "mine_setting.html", title: "设置"});
+					});
+					
+					doc.querySelector(".mine-edit").addEventListener("tap", function(){
+						app.hrefUrl("mine_message.html");
+					});
+					
+					doc.querySelector(".mine-avatar").addEventListener("tap", function(){
+						app.hrefUrl("mine_message.html");
+					});
+					
+					doc.querySelector(".mine-share").addEventListener("tap", function(){
+						app.share({title:"Eduugo驿渡网", href:"http://static.eduugo.com/apps/download.html", content:"驿渡网-视频择校 APP 点击下载"});
+					});
+				});
+				
+				function getInfo(){
+					var state = app.getState();
+					if(!state.token){
+						return;
+					}
+					doc.querySelector(".mine-name").textContent = state.user.name;
+					doc.querySelector(".mine-avatar").src = state.user.avatar;
+//					var url = app.apiHost+"/user/get-user-base-info";
+//					var param = {'token':state.token};
+//					$.post(url, param, function(res){
+//						if(res.code == 1){
+//							doc.querySelector(".mine-name").textContent = res.data.user.name;
+//							doc.querySelector(".mine-avatar").src = res.data.user.avatar+"?time="+new Date().getTime();
+//						}
+//					});
+				}
+			}(mui, document));
+			
+
+			
+		</script>
+	</body>
+
+</html>

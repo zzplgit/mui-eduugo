@@ -1,0 +1,564 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/video.css" rel="stylesheet"  />
+	</head>
+
+	<body>
+		
+		<div class="video-object">
+    		<video id="edVideo" class="video-none" preload></video>
+    		<div class="video-controls app-none">
+				<a class="video-control-btn video-btn-play"><img src="../images/play.png" /></a>
+    			<a class="video-control-btn mui-pull-right video-btn-full"><img src="../images/full_screen.png" /></a>
+    		</div>
+			<div class="video-play">
+				<img src="../images/video_details_01.png" class="app-none" />
+			</div>
+			
+			<div class="video-msg app-none">
+				<img class="video-msg-img" src="../images/video_details_02.png"/>
+				<div class="video-msg-text video-line1"></div>
+				<div class="video-msg-text video-line2"></div>
+				<div class="video-msg-btn video-line3 app-none">
+					<button type="button" class="mui-btn">点击刷新</button>
+				</div>
+			</div>
+			
+			<div class="video-loadding app-none">
+				<img src="../images/video_details_02.png" />
+			</div>
+			<div class="video-top">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<span class="video-title"></span>
+			</div>
+	    </div>
+	    
+	    
+		<div class="mui-content video-detail-content video-live">
+			<div class="mui-table video-bar video-bar-live">
+				<img class="video-headerimg" src="../images/headerimg_placeholder.png"/>
+				<div id="videoCellInfo" class="mui-table-cell">
+					<p class="mui-h5 mui-ellipsis data-video-title"></p>
+					<p class="mui-h6 mui-ellipsis data-play-times"></p>
+				</div>
+				<img src="../images/icon-zhibo.png" class="video-live-icon app-none" />
+				<div class="mui-table-cell video-segmented-control app-none">
+					<div class="mui-segmented-control mui-segmented-control-primary">
+						<a class="mui-control-item mui-active" name="ppt" href="#videoPpt">文档</a>
+						<a class="mui-control-item video-chat-btn" name="chat" href="#videoChat">问答</a>
+					</div>
+				</div>
+				<div class="mui-table-cell video-count-down">
+					<p class="mui-h6">距离直播还有</p>
+					<p class="mui-h6 count-down-time">00:00:00</p>
+				</div>
+			</div>
+			<div class="mui-control-content mui-active">
+				
+				<div class="mui-control-content mui-active" id="videoPpt">
+					<div class="video-line"></div>
+					<img class="video-ppt app-none" src="" />
+				</div>
+				<div class="mui-control-content video-chat-content" id="videoChat" style="top: 260px;">
+					<div class="mui-scroll-wrapper mui-fullscreen video-chat-scroll">
+						<div class="mui-scroll">
+				  			<ul class="mui-table-view mui-table-view-chevron"></ul>
+				  			<div class="mui-pull app-none">
+				  				<div class="mui-pull-loading mui-icon mui-spinner mui-visibility"></div>
+				  				<div class="mui-pull-caption mui-pull-caption-refresh">正在加载...</div>
+				  			</div>
+				  		</div>
+				 	</div>
+				  	<template id="chatCell">
+						<div class="mui-card">
+							<div class="mui-card-content">
+								<div class="mui-card-header mui-card-media">
+									<img class="video-header-img" src="../images/headerimg_placeholder.png" />
+									<div class="mui-media-body video-name"></div>
+								</div>
+								<div class="mui-card-content-inner video-text"></div>
+							</div>
+						</div>
+					</template>
+				</div>
+			</div>
+			
+			<div class="video-bottom-bar app-none" style="z-index: 2;">
+				<form action="" class="video-bottom-form">
+					<div class="mui-input-row"><input id="videoMsg" type="text" /></div>
+					<div class="video-bottom-btn">
+						<img class="video-btn-share" src="../images/tb-share.png" />
+					</div>
+				</form>
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/socket.io.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			
+			(function($, doc, videoLive){
+				var self, ppt, socket, state, token, room, shareMsg, video;
+				var seatNum = 1;
+				var pageSize = 10;
+				var pageNo = 1;
+				
+				$.plusReady(function(){
+					var old_back = $.back;
+					$.back = function(){
+						var isFullscreen = plus.navigator.isFullscreen();
+						if(isFullscreen){
+							fullScreen();
+						}else{
+							old_back();
+						}
+					}
+					
+					state = app.getState();
+					token = state.token || '';
+					self = plus.webview.currentWebview();
+					getContent(self.videoId);
+					
+					pullfreshFun();
+					
+					doc.querySelector(".video-bottom-form").addEventListener("submit", function(e){
+						var word = doc.getElementById("videoMsg").value;
+						//阻止冒泡事件
+						e.preventDefault();
+						doc.getElementById("videoMsg").blur();
+						doc.getElementById("videoMsg").value = "";
+						sendChat(word);
+					});
+					
+					doc.addEventListener('touchstart',function(e){
+						doc.getElementById("videoMsg").blur();
+					});
+					
+					doc.getElementById("videoMsg").addEventListener("focus", function(e){
+						var state = app.getState();
+						var token = state.token || '';
+						if(!token){
+							mui.openWindow({
+							    url: "login_hub.html",
+							    show:{duration: 200}
+							});
+							return;
+						}
+					});
+					
+					doc.querySelector(".video-btn-share").addEventListener("tap", function(){
+						if(shareMsg){
+							app.share(shareMsg);
+						}
+					});
+					
+					doc.querySelector('.video-chat-scroll').addEventListener('scroll',function(e){
+						var sh = this.scrollHeight;
+						var st = this.scrollTop;
+						var ch = this.clientHeight;
+						if(st+ch >= sh){
+							pullfreshFun();
+						}
+					});
+					
+					doc.addEventListener("netchange", function() {
+						if(!video.paused){
+							var nt = plus.networkinfo.getCurrentType();
+							switch (nt){
+								case plus.networkinfo.CONNECTION_ETHERNET:
+								case plus.networkinfo.CONNECTION_WIFI:
+									$.toast('你已在使用Wi-Fi网络，放心观看吧！',{ duration:'short', type:'div'});
+								break; 
+								case plus.networkinfo.CONNECTION_CELL2G:
+								case plus.networkinfo.CONNECTION_CELL3G:
+								case plus.networkinfo.CONNECTION_CELL4G:
+									videoPause();
+									$.confirm("你已在移动网络下！使用流量继续观看？", "提示", ["继续播放", "暂不播放"], function(res){
+										if(res.index == 0){
+											videoP();
+										}
+									}, "div");
+								break; 
+								default:
+									//alert("Not networks!"); 
+									doc.querySelector(".video-msg-img").src = "../images/video_details_05.png";
+									doc.querySelector(".video-line1").textContent = "断网啦！请检查网络环境！";
+									doc.querySelector(".video-line2").textContent = "";
+									doc.querySelector(".video-msg").classList.remove("app-none");
+									doc.querySelector(".video-top").classList.remove("app-none");
+								break;
+							}
+						}
+					});
+					
+					doc.querySelector(".video-msg-btn").addEventListener("tap", function(){
+						video.load();
+						videoP();
+					});
+				
+					$(".video-segmented-control div").on("tap", "a", function(e){
+						if(this.name == "chat"){
+							doc.querySelector(".video-bottom-bar").classList.remove("app-none");
+						}else{
+							doc.querySelector(".video-bottom-bar").classList.add("app-none");
+						}
+					});
+					
+				});
+				
+				$.ready(function(){
+					var width = document.documentElement.clientWidth || document.body.clientWidth;
+					var nWidth = width-246;
+					mui("#videoCellInfo")[0].style.cssText = " width:"+nWidth+"px";
+					
+					video = doc.getElementById("edVideo");
+					doc.querySelector(".video-play img").addEventListener("tap", function(){
+						video.classList.remove("video-none");
+						doc.querySelector(".video-loadding").classList.remove("app-none");
+						doc.querySelector(".video-play").classList.add("app-none");
+						doc.querySelector(".video-top").classList.add("app-none");
+						videoPlay();
+					});
+					
+					video.addEventListener('timeupdate', function(e) {
+						//阻止冒泡事件
+						e.preventDefault();
+						if(doc.querySelector(".video-loadding").classList.contains('app-none')!=true){
+							doc.querySelector(".video-loadding").classList.add("app-none");
+						}
+					});
+					
+					video.addEventListener("tap", function(){
+						if(doc.querySelector(".video-controls").classList.contains('app-none')==true){
+							doc.querySelector(".video-controls").classList.remove("app-none");
+							doc.querySelector(".video-top").classList.remove("app-none");
+							setTimeout(function(){
+								if(doc.querySelector(".video-controls").classList.contains('app-none')!=true){
+									doc.querySelector(".video-controls").classList.add("app-none");
+									doc.querySelector(".video-top").classList.add("app-none");
+								}
+							},5000);
+					    }else{
+					    	doc.querySelector(".video-controls").classList.add("app-none");
+					    	doc.querySelector(".video-top").classList.add("app-none");
+					    }
+					});
+					
+					doc.querySelector(".video-btn-play").addEventListener("tap", function(){
+						videoPlay();
+						return false;
+					});
+					
+					doc.querySelector(".video-btn-full").addEventListener("tap", function(){
+						fullScreen();
+					});
+
+				});
+				
+				
+				function videoPlay(){
+					if(video.paused) {
+						videoP();
+					} else {
+						videoPause();
+					}
+				}
+				
+				function videoP(){
+					if(video.paused) {
+						doc.querySelector(".video-msg").classList.add("app-none");
+						doc.querySelector(".video-btn-play img").src = "../images/video_pause.png";
+						video.play();
+					}
+				}
+				
+				function videoPause(){
+					if(!video.paused) {
+						doc.querySelector(".video-btn-play img").src = "../images/play.png";
+						video.pause();
+					}
+				}
+				
+				function fullScreen(){
+					var isFullscreen = plus.navigator.isFullscreen();
+					if(isFullscreen){
+						//document.webkitCancelFullScreen();
+						plus.navigator.setFullscreen( false );
+						//plus.screen.unlockOrientation();
+						plus.screen.lockOrientation( 'portrait-primary' );
+						self.setStyle({
+						    scrollIndicator: 'vertical'
+						});
+						doc.querySelector(".video-detail-content").classList.remove("app-none");
+						video.style.height = "210px";
+						doc.querySelector(".video-object .video-controls").style.bottom = "-210px";
+					}else{
+						plus.navigator.setFullscreen( true );
+						plus.screen.lockOrientation('landscape');
+						self.setStyle({
+						    scrollIndicator: 'none'
+						});
+						doc.querySelector(".video-detail-content").classList.add("app-none");
+						//设置高度
+						var height = plus.screen.resolutionWidth;
+						video.style.height = (height+1)+"px";
+						doc.querySelector(".video-object .video-controls").style.bottom = "-"+(height+1)+"px";
+					}
+				}
+				
+				function liveS() {
+					doc.querySelector(".video-live-icon").classList.remove("app-none");
+					doc.querySelector(".video-segmented-control").classList.remove("app-none");
+					doc.querySelector(".video-ppt").classList.remove("app-none");
+					doc.querySelector(".video-count-down").classList.add("app-none");
+					doc.querySelector(".data-play-times").textContent = seatNum+" 人在看";
+					doc.querySelector(".video-object .video-play img").classList.remove("app-none");
+					//doc.querySelector(".video-bottom-bar").classList.remove("app-none");
+					
+					video.addEventListener("error", function(){
+						//video.error.code 1.用户终止 2.网络错误 3.解码错误 4.URL无效
+						if(video.error.code == 4){
+							doc.querySelector(".video-msg-img").src = "../images/video_details_04.png";
+							doc.querySelector(".video-line1").textContent = "本次直播已结束";
+							doc.querySelector(".video-line2").textContent = "请收藏我等待回顾视频";
+							doc.querySelector(".video-msg").classList.remove("app-none");
+							doc.querySelector(".video-top").classList.remove("app-none");
+						}else if(video.error.code != 2){
+							doc.querySelector(".video-msg-img").src = "../images/video_details_06.png";
+							doc.querySelector(".video-line1").textContent = "加载失败了，请稍后重试";
+							doc.querySelector(".video-line2").textContent = "";
+							doc.querySelector(".video-msg").classList.remove("app-none");
+							doc.querySelector(".video-top").classList.remove("app-none");
+						}
+					});
+				}
+				
+				function getContent(id){
+					var url = app.apiHost+"/live/live-info";
+					var param = {'id':id};
+					$.post(url, param, function(res){
+						if(res.code == 1){
+							room = res.data.model.uuid;
+							doc.querySelector(".video-object video").poster = res.data.model.cover;
+							doc.querySelector(".video-object video").src = res.data.model.stream_code;
+							
+							if(res.data.model.speaker[0]){
+								doc.querySelector(".data-video-title").textContent = res.data.model.speaker[0].name || " ";
+								doc.querySelector(".video-headerimg").src = res.data.model.speaker[0].image;
+							}
+							doc.querySelector(".video-ppt").src = res.data.model.current_ppt;
+							
+							seatNum = res.data.model.seat_num;
+							
+//							console.info(res.data.model.systemTime);
+//							console.info(res.data.model.start_time);
+							if(res.data.model.systemTime - res.data.model.start_time > 0){
+								liveS();
+							}else{
+								doc.querySelector(".data-play-times").textContent = "已报名"+seatNum+"人";
+								setTimeout("videoLive.leftTimer("+(res.data.model.start_time-res.data.model.systemTime)+")",1000);
+							}
+							
+							console.info(res.data.model.stream_code);
+							
+							doc.querySelector(".video-object .video-play").style.backgroundImage="url("+res.data.model.cover+")";
+							doc.querySelector(".video-title").textContent = res.data.model.title;
+							
+							shareMsg = {
+								title:res.data.model.title,
+								content: "快来围观直播吧! "+res.data.shareUrl,
+								pictures: [res.data.model.cover],
+								href:res.data.shareUrl,
+							};
+							
+							//socket
+				            socket = io.connect('http://node.service.eduugo.com/chat');
+				            var enter = {"room": room};
+				            if(state.user){
+				            	enter.uid = state.user.id || '';
+				            	enter.nickname = state.user.name || '';
+				            	enter.avatar = state.user.avatar || '';
+				            	enter.role = state.user.role || '';
+				        	}
+				          	socket.emit('enter', enter);
+//							socket.on('onEnter', function (res) {
+//								for(var i in res){
+//									console.info(i);
+//									console.info(res[i]);
+//								}
+//							});
+							socket.on('ppt', function (ppt) {
+								doc.querySelector(".video-ppt").src = ppt.ppt_url;
+							});
+							socket.on('start', function () {
+								videoPlay();
+								console.info("video start");
+							});
+							socket.on('stop', function () {
+								videoPause();
+								doc.querySelector(".video-msg-img").src = "../images/video_details_04.png";
+								doc.querySelector(".video-line1").textContent = "本次直播已结束";
+								doc.querySelector(".video-line2").textContent = "请收藏我等待回顾视频";
+								doc.querySelector(".video-msg").classList.remove("app-none");
+								doc.querySelector(".video-top").classList.remove("app-none");
+								console.info("video stop");
+							});
+							socket.on('get message', function (data) {
+								var chatDoc = document.querySelector(".video-chat-content .mui-table-view");
+								var msgData = [{
+									'comment_id': data.comment_id,
+									'word': data.content,
+									'fuserInfo': {
+										'id': data.uid,
+										'name': data.nickname,
+										'avatar': data.avatar,
+										'role': data.role
+									}
+								}];
+								chatDoc.insertBefore(createFragment(msgData), chatDoc.firstChild);
+							});
+						}
+					}, "json");
+				}
+				
+				function sendChat(word){
+					var state = app.getState();
+					var token = state.token || '';
+					if(!token){
+						mui.openWindow({
+						    url: "login_hub.html",
+						    show:{duration: 200}
+						});
+						return;
+					}
+					
+					if(!word){
+						$.toast("请输入内容", {});
+						return;
+					}
+					var url = app.apiHost+"/live/add-comment";
+					var param = {
+						'token': token,
+						'id': self.videoId,
+						'word': word
+					};
+					
+					$.post(url, param, function(res){
+						if(res.code == 1){
+							var send = {
+								'room': room,
+								'data': {
+									"uid": res.data.fuserInfo.id,
+									"nickname": res.data.fuserInfo.name,
+									"avatar": res.data.fuserInfo.avatar,
+									"role": res.data.fuserInfo.role,
+									"content": word,
+									"comment_id": res.data.comment_id
+								}
+								//'data': res.data
+							};
+							socket.emit('send message', send);
+						}else{
+							var msg = res.message || "发送失败";
+							$.toast(msg, {});
+						}
+					}, "json");
+				}
+				
+				videoLive.leftTimer = function (second){
+					if(second || second > 0){
+						var days = parseInt(second / 60 / 60 / 24 , 10);
+						var hours = parseInt(second / 60 / 60 % 24, 10); //计算剩余的小时 
+						var minutes = parseInt(second / 60 % 60, 10);//计算剩余的分钟 
+						var seconds = parseInt(second % 60, 10);//计算剩余的秒数 
+						hours = checkTime(hours);
+						minutes = checkTime(minutes);
+						seconds = checkTime(seconds);
+						
+						if(days > 0){
+							doc.querySelector(".count-down-time").textContent = days+"天 "+hours+":"+minutes+":"+seconds;
+						}else{
+							doc.querySelector(".count-down-time").textContent = hours+":"+minutes+":"+seconds;
+						}
+						
+						setTimeout("videoLive.leftTimer("+(second-1)+")",1000);
+					}else{
+						liveS();
+					}
+				}
+				function checkTime(i){
+					if(i<10) { 
+						i = "0" + i;
+					} 
+					return i; 
+				}
+				
+				
+				function getChat(){
+					var pull = doc.querySelector(".video-chat-content .mui-pull");
+					var id = self.videoId;
+					var url = app.apiHost+"/live/get-comment";
+					var param = {'id':id, pageNo:pageNo, pageSize:pageSize};
+					
+					if(pull.classList.contains('app-none')==true){
+						pull.classList.remove("app-none");
+					}else{
+						return;
+					}
+					$.getJSON(url, param, function(res){
+						if(res.code == 1){
+							var chatDoc = document.querySelector(".video-chat-content .mui-table-view");
+							chatDoc.insertBefore(createFragment(res.data.data), chatDoc.lastChild);
+							pageNo++;
+							if(res.data.pageMaxNum >= pageNo){
+								pull.classList.add("app-none");
+							}else{
+					  			pull.querySelector(".mui-pull-loading").classList.add("app-none");
+					  			pull.querySelector(".mui-pull-caption").textContent = "没有更多数据了";
+							}
+						}else{
+				  			pull.querySelector(".mui-pull-loading").classList.add("app-none");
+				  			pull.querySelector(".mui-pull-caption").textContent = "没有更多数据了";
+						}
+					});
+				}
+				
+				function createFragment(data){
+					var fragment = document.createDocumentFragment();
+					var div;
+					for (var i = 0; i < data.length; i++) {
+						div = document.getElementById("chatCell").content.cloneNode(true);
+						if(data[i].fuserInfo.avatar){
+							div.querySelector(".video-header-img").src = data[i].fuserInfo.avatar;
+						}
+						if(state.user && state.user.id && state.user.id == data[i].fuserInfo.id){
+							div.querySelector(".video-name").textContent = '我:';
+							div.querySelector(".video-name").style.textAlign = "right";
+							div.querySelector(".video-header-img").style.float = "right";
+						}else{
+							div.querySelector(".video-name").textContent = data[i].fuserInfo.name+':';
+						}
+						div.querySelector(".video-text").textContent = data[i].word;
+						fragment.appendChild(div);
+					}
+					
+					return fragment;
+				}
+				
+				function pullfreshFun(){
+					getChat();
+				}
+				
+			}(mui, document, window.videoLive = {}));
+
+		</script>
+	</body>
+
+</html>

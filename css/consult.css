@@ -1,0 +1,128 @@
+			
+.mui-bar~.mui-content .mui-fullscreen {
+	top: 44px;
+	height: auto;
+}
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -25px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 2;
+}
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+.mui-pull-top-tips .mui-pull-loading {
+	/*-webkit-backface-visibility: hidden;
+	-webkit-transition-duration: 400ms;
+	transition-duration: 400ms;*/
+	
+	margin: 0;
+}
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+.mui-pull-top-wrapper .mui-icon.mui-reverse {
+	/*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+.mui-pull-bottom-tips {
+	left: 0;
+	display: block;
+	width: 100%;
+	position: relative;
+	bottom: 0;
+	height: 40px;
+	background: #ffffff;
+}
+.mui-pull-bottom-wrapper {
+    font-weight: 700;
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    left: 0;
+    text-align: center;
+    color: #777;
+}
+.mui-pull-loading {
+	font-size: 15px;
+	line-height: 24px;
+	position: relative;
+	display: inline-block;
+	overflow: visible;
+	margin-top: 0;
+	vertical-align: middle;
+	padding-left: 11.5px;
+}
+
+.mui-content {background: #ffffff; top: 64px;}
+
+.mui-segmented-control.consult-slider-indicator::before {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 4px;
+    content: '';
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    background-color: #f3f4f6;
+    bottom: 0;
+}
+
+.mui-segmented-control.consult-slider-indicator {
+	background: #ffffff;
+	height: 50px;
+}
+
+.mui-segmented-control.consult-slider-indicator .mui-control-item {
+	line-height: 50px;
+	padding: 0 10px;
+}
+
+.mui-segmented-control.mui-segmented-control-inverted.consult-slider-indicator .mui-control-item {
+    color: #9b9b9b;
+    border: 0;
+    font-size: 18px;
+}
+
+.mui-segmented-control.mui-segmented-control-inverted.consult-slider-indicator .mui-control-item.mui-active {
+    color: #f6a623;
+    font-size: 20px;
+    line-height: 52px;
+}
+
+.consult-banner {z-index: 4; position: relative; background: #FFFFFF;}
+.consult-banner img {z-index: 4; position: relative;height: 120px; width: 100%;}

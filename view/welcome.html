@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<div class="mui-content welcome-content">
+			<div class="welcome-title">
+				<img src="../images/welcome_font.png" />
+			</div>
+			<div class="welcome-btn">
+				<img src="../images/welcome_btn.png" />
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self, setting;
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					setting = app.getSettings();
+					$(".welcome-btn").on("tap", "img", function(e){
+						this.src = "../images/welcome_btn2.png";
+						setting.showWelcome = false;
+						app.setSettings(setting);
+						app.hrefUrl("index.html");
+						self.close();
+					});
+				});
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,908 @@
+{
+	"@platforms": [
+		"android",
+		"iPhone",
+		"iPad"
+	],
+	"id": "io.hybrid.ed.v02",/*应用的标识，创建应用时自动生成，勿手动修改*/
+	"name": "驿渡",/*应用名称，程序桌面图标名称*/
+	"version": {
+		"name": "1.0.7",/*应用版本名称*/
+		"code": "83"
+	},
+	"description": "",/*应用描述信息*/
+	"icons": {
+		"72": "icon.png"
+	},
+	"launch_path": "view/index.html",/*应用的入口页面，默认为根目录下的index.html；支持网络地址，必须以http://或https://开头*/
+	"developer": {
+		"name": "",/*开发者名称*/
+		"email": "",/*开发者邮箱地址*/
+		"url": "http://www.dcloud.io"
+	},
+	"permissions": {
+		"Accelerometer": {
+			"description": "访问加速度感应器"
+		},
+
+		"Cache": {
+			"description": "管理应用缓存"
+		},
+
+		"Console": {
+			"description": "跟踪调试输出日志"
+		},
+
+
+		
+		"Events": {
+			"description": "应用扩展事件"
+		},
+		"File": {
+			"description": "访问本地文件系统"
+		},
+		"Gallery": {
+			"description": "访问系统相册"
+		},
+
+		"Invocation": {
+			"description": "使用Native.js能力"
+		},
+
+		"Orientation": {
+			"description": "访问方向感应器"
+		},
+		"Proximity": {
+			"description": "访问距离感应器"
+		},
+		"Storage": {
+			"description": "管理应用本地数据"
+		},
+		"UI": {},
+		"Uploader": {
+			"description": "管理文件上传任务"
+		},
+		"Runtime": {
+			"description": "访问运行期环境"
+		},
+		"XMLHttpRequest": {
+			"description": "跨域网络访问"
+		},
+		"Zip": {
+			"description": "文件压缩与解压缩"
+		},
+		
+		"Webview": {},
+		"NativeUI": {},
+		"Navigator": {},
+		"NativeObj": {},
+		"Device": {},"Camera":{},"Share":{},"Downloader":{},"Statistic":{}
+	},
+	"plus": {
+		"splashscreen": {
+			"autoclose": true,/*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
+			"waiting": true,
+			"delay": "0"
+		},
+        "statusbar": {
+            "immersed": true
+        },
+		"runmode": "liberate",/*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
+		"signature": "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",/*可选，保留给应用签名，暂不使用*/
+		"distribute": {"plugins":{"statics":{"umeng":{"appkey_ios":"1","channelid_ios":"1","appkey_android":"597164328630f5423700113e","channelid_android":"驿渡"}},"share":{"weixin":{"appid":"wx26031228c6008d9a","appsecret":"3fbe6bb29f4a4f0853fd4501a0be9e73"},"qq":{"appid":"1106241308","description":"QQ分享"}}},
+			"apple": {
+				"appid": "",/*iOS应用标识，苹果开发网站申请的appid，如io.dcloud.HelloH5*/
+				"mobileprovision": "",/*iOS应用打包配置文件*/
+				"password": "",/*iOS应用打包个人证书导入密码*/
+				"p12": "",/*iOS应用打包个人证书，打包配置文件关联的个人证书*/
+				"devices": "universal",/*iOS应用支持的设备类型，可取值iphone/ipad/universal*/
+				"frameworks": []
+			},
+			"google": {
+				"packagename": "",/*Android应用包名，如io.dcloud.HelloH5*/
+				"keystore": "",/*Android应用打包使用的密钥库文件*/
+				"password": "",/*Android应用打包使用密钥库中证书的密码*/
+				"aliasname": "",/*Android应用打包使用密钥库中证书的别名*/
+				"permissions": ["<uses-permission android:name=\"com.android.launcher.permission.INSTALL_SHORTCUT\"/>","<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>","<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>","<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>","<uses-permission android:name=\"android.permission.VIBRATE\"/>","<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>","<uses-permission android:name=\"android.permission.CALL_PHONE\"/>","<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>","<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>","<uses-feature android:name=\"android.hardware.camera\"/>","<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>","<uses-permission android:name=\"android.permission.ACCESS_MOCK_LOCATION\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>","<uses-permission android:name=\"com.android.launcher.permission.UNINSTALL_SHORTCUT\"/>","<uses-permission android:name=\"android.permission.CAMERA\"/>"]
+			},
+			"orientation": [
+				"portrait-primary",
+				"portrait-secondary"
+			],/*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
+			"icons": {
+				"ios": {
+					"prerendered": true, /*应用图标是否已经高亮处理，在iOS6及以下设备上有效*/
+					"auto": "", /*应用图标，分辨率：512x512，用于自动生成各种尺寸程序图标*/
+					"iphone": {
+						"normal": "unpackage/res/icons/57x57.png",/*iPhone普通屏幕程序图标，分辨率：57x57*/
+						"retina": "unpackage/res/icons/114x114.png",/*iPhone高分屏程序图标，分辨率：114x114*/
+						"retina7": "unpackage/res/icons/120x120.png",/*iPhone iOS7高分屏程序图标，分辨率：120x120*/
+						"spotlight-normal": "unpackage/res/icons/29x29.png", /*iPhone Spotlight搜索程序图标，分辨率：29x29*/
+						"spotlight-retina": "unpackage/res/icons/58x58.png", /*iPhone高分屏Spotlight搜索程序图标，分辨率：58x58*/
+						"spotlight-retina7": "unpackage/res/icons/80x80.png",/*iPhone iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
+						"settings-normal": "unpackage/res/icons/29x29.png", /*iPhone设置页面程序图标，分辨率：29x29*/
+						"settings-retina": "unpackage/res/icons/58x58.png",
+						"retina8": "unpackage/res/icons/180x180.png",
+						"settings-retina8": "unpackage/res/icons/87x87.png"
+					},
+					"ipad": {
+						"normal": "unpackage/res/icons/72x72.png", /*iPad普通屏幕程序图标，分辨率：72x72*/
+						"retina": "unpackage/res/icons/144x144.png", /*iPad高分屏程序图标，分辨率：144x144*/
+						"normal7": "unpackage/res/icons/76x76.png", /*iPad iOS7程序图标，分辨率：76x76*/
+						"retina7": "unpackage/res/icons/152x152.png", /*iPad iOS7高分屏程序图标，分辨率：152x152*/
+						"spotlight-normal": "unpackage/res/icons/50x50.png", /*iPad Spotlight搜索程序图标，分辨率：50x50*/
+						"spotlight-retina": "unpackage/res/icons/100x100.png", /*iPad高分屏Spotlight搜索程序图标，分辨率：100x100*/
+						"spotlight-normal7": "unpackage/res/icons/40x40.png",/*iPad iOS7 Spotlight搜索程序图标，分辨率：40x40*/
+						"spotlight-retina7": "unpackage/res/icons/80x80.png",/*iPad iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
+						"settings-normal": "unpackage/res/icons/29x29.png",/*iPad设置页面程序图标，分辨率：29x29*/
+						"settings-retina": "unpackage/res/icons/58x58.png"
+					}
+				},
+				"android": {
+					"mdpi": "unpackage/res/icons/48x48.png", /*普通屏程序图标，分辨率：48x48*/
+					"ldpi": "unpackage/res/icons/48x48.png", /*大屏程序图标，分辨率：48x48*/
+					"hdpi": "unpackage/res/icons/72x72.png", /*高分屏程序图标，分辨率：72x72*/
+					"xhdpi": "unpackage/res/icons/96x96.png",/*720P高分屏程序图标，分辨率：96x96*/
+					"xxhdpi": "unpackage/res/icons/144x144.png",
+					"xxxhdpi": "unpackage/res/icons/192x192.png"
+				}
+			},
+			"splashscreen": {
+				"ios": {
+					"iphone": {
+						"default": "", /*iPhone3启动图片选，分辨率：320x480*/
+						"retina35": ""
+					},
+					"ipad": {
+						"portrait": "", /*iPad竖屏启动图片，分辨率：768x1004*/
+						"portrait-retina": "",/*iPad高分屏竖屏图片，分辨率：1536x2008*/
+						"landscape": "", /*iPad横屏启动图片，分辨率：1024x748*/
+						"landscape-retina": "", /*iPad高分屏横屏启动图片，分辨率：2048x1496*/
+						"portrait7": "", /*iPad iOS7竖屏启动图片，分辨率：768x1024*/
+						"portrait-retina7": "",/*iPad iOS7高分屏竖屏图片，分辨率：1536x2048*/
+						"landscape7": "", /*iPad iOS7横屏启动图片，分辨率：1024x768*/
+						"landscape-retina7": ""
+					}
+				},
+				"android": {
+					"mdpi": "", /*普通屏启动图片，分辨率：240x282*/
+					"ldpi": "", /*大屏启动图片，分辨率：320x442*/
+					"hdpi": "C:/Users/ameson/Desktop/yd/启动页/安卓/480_762 安卓@1x.png", /*高分屏启动图片，分辨率：480x762*/
+					"xhdpi": "C:/Users/ameson/Desktop/yd/启动页/安卓/720_1242 安卓@1x.png", /*720P高分屏启动图片，分辨率：720x1242*/
+					"xxhdpi": "C:/Users/ameson/Desktop/yd/启动页/安卓/1080_1882 安卓@1x.png"
+				}
+			},
+			
+			"debug": false
+		}
+	},
+	"dependencies": {
+		"pages": {
+			"setting.html": {
+				"href": "setting.html",
+				"resources": [
+					"js/mui.min.js",
+					"js/mui.view.js",
+					"libs/easymob-webim-sdk/jquery-1.11.1.js",
+					"libs/easymob-webim-sdk/strophe-custom-2.0.0.js",
+					"libs/easymob-webim-sdk/json2.js",
+					"libs/easymob-webim-sdk/easemob.im-1.0.5.js",
+					"js/feedback.js",
+					"js/feedback-page.js",
+					"js/mui.locker.js",
+					"js/app.js",
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"css/feedback-page.css",
+					"images/iconfont-tianjia.png"
+				],
+				"refer": [
+					"login.html"
+				],
+				"priority": 1
+			},
+			"main.html": {
+				"href": "main.html",
+				"resources": [
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"js/mui.min.js",
+					"js/app.js"
+				],
+				"refer": [
+					"setting.html"
+				],
+				"priority": 1
+			},
+			"unlock.html": {
+				"href": "unlock.html",
+				"resources": [
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"js/mui.min.js",
+					"js/mui.locker.js",
+					"js/app.js"
+				],
+				"refer": [
+					"login.html",
+					"main.html"
+				],
+				"priority": 0
+			},
+			"forget_password.html": {
+				"href": "forget_password.html",
+				"resources": [
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"css/style.css",
+					"js/mui.min.js",
+					"js/app.js"
+				],
+				"priority": 1
+			},
+			"reg.html": {
+				"href": "reg.html",
+				"resources": [
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"css/style.css",
+					"js/mui.min.js",
+					"js/app.js"
+				],
+				"refer": [
+					"login.html"
+				],
+				"priority": 3
+			},
+			"login.html": {
+				"href": "login.html",
+				"resources": [
+					"css/mui.min.css",
+					"fonts/mui.ttf",
+					"css/style.css",
+					"js/mui.min.js",
+					"js/mui.enterfocus.js",
+					"js/app.js",
+					"images/qihoo.png",
+					"images/qq.png",
+					"images/sinaweibo.png",
+					"images/weixin.png"
+				],
+				"refer": [
+					"unlock.html",
+					"forget_password.html",
+					"main.html",
+					"reg.html"
+				],
+				"priority": 0
+			},
+			"view/index.html": {
+				"resources": [
+					"js/mui.min.js",
+					"view/discovery.html",
+					"fonts/mui.ttf",
+					"css/mui.min.css",
+					"css/style.css",
+					"images/bg-head.png",
+					"images/eduugo.png",
+					"images/tb-faxian-H.png",
+					"images/tb-faxian.png",
+					"images/tb-zixun.png",
+					"images/tb-zhibo.png",
+					"images/tb-zhibo-h.png",
+					"images/tb-wode-h.png",
+					"images/tb-zixun-h.png",
+					"images/tb-wode.png",
+					"images/contacts-frame.png",
+					"images/contacts-button.png",
+					"view/consult.html",
+					"view/discovery_sub.html",
+					"js/mui.pullToRefresh.js",
+					"js/mui.pullToRefresh.material.js",
+					"view/video.html",
+					"js/app.js",
+					"view/mine.html",
+					"images/xuepei_btn_pre@2x.png",
+					"images/xuepei_btn@2x.png",
+					"images/zixun_btn@2x.png",
+					"images/shipin_btn_pre@2x.png",
+					"images/shipin_btn@2x.png",
+					"images/wode_btn@2x.png",
+					"images/zixun_btn_pre@2x.png"
+				],
+				"refer": [
+					"view/contacts.html",
+					"view/consult_sub.html",
+					"view/login.html",
+					"view/login_hub.html",
+					"view/welcome.html",
+					"view/template_back.html",
+					"view/error_network.html",
+					"view/culture.html"
+				],
+				"priority": 0
+			},
+			"view/discovery.html": {
+				"resources": [
+					"css/mui.min.css",
+					"css/style.css",
+					"images/btn-line-s.png",
+					"images/cbd.jpg",
+					"images/muwu.jpg",
+					"images/yuantiao.jpg",
+					"images/shuijiao.jpg",
+					"images/default_portrait.jpg",
+					"images/icon-zuobiao.png",
+					"css/discovery.css",
+					"view/discovery_sub.html",
+					"fonts/mui.ttf",
+					"images/headerimg_placeholder.png",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/consult.html": {
+				"resources": [
+					"css/mui.min.css",
+					"view/consult_sub.html",
+					"fonts/mui.ttf",
+					"css/consult.css",
+					"css/style.css",
+					"images/tb-zixun.png",
+					"images/tb-zhibo.png",
+					"images/contacts-button.png",
+					"images/bg-head.png",
+					"images/eduugo.png",
+					"js/mui.min.js",
+					"images/tb-faxian-H.png",
+					"images/tb-wode.png",
+					"js/mui.pullToRefresh.js",
+					"js/mui.pullToRefresh.material.js",
+					"images/cbd.jpg",
+					"images/muwu.jpg",
+					"images/shuijiao.jpg",
+					"images/default_portrait.jpg",
+					"images/college-library.png",
+					"images/headerimg_placeholder.png",
+					"js/app.js"
+				],
+				"refer": [
+					"view/school.html",
+					"view/consult_detail.html"
+				],
+				"priority": 0
+			},
+			"view/video.html": {
+				"resources": [
+					"css/mui.min.css",
+					"css/discovery.css",
+					"images/headerimg_placeholder.png",
+					"images/cbd.jpg",
+					"images/muwu.jpg",
+					"images/yuantiao.jpg",
+					"images/icon-zuobiao.png",
+					"images/shuijiao.jpg",
+					"images/btn-line-s.png",
+					"css/video.css",
+					"js/app.js",
+					"js/mui.min.js",
+					"css/style.css",
+					"view/video_live.html",
+					"js/mui.pullToRefresh.js",
+					"js/mui.pullToRefresh.material.js",
+					"images/eduugo.png",
+					"images/bg-head.png",
+					"images/home_list_time_icon.png",
+					"fonts/mui.ttf"
+				],
+				"refer": [
+					"view/video_review.html",
+					"view/template_back.html",
+					"view/video_enroll.html",
+					"view/error_network.html",
+					"view/special_lingbao.html"
+				],
+				"priority": 0
+			},
+			"view/contacts.html": {
+				"resources": [
+					"css/mui.min.css",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/discovery_sub.html": {
+				"resources": [
+					"images/icon-zuobiao.png",
+					"css/mui.min.css",
+					"css/discovery.css",
+					"images/default_portrait.jpg",
+					"images/cbd.jpg",
+					"images/muwu.jpg",
+					"images/yuantiao.jpg",
+					"images/shuijiao.jpg",
+					"images/btn-line-s.png",
+					"css/style.css",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/consult_sub.html": {
+				"resources": [
+					"css/consult.css",
+					"css/mui.min.css",
+					"images/btn-line-s.png",
+					"images/cbd.jpg",
+					"images/muwu.jpg",
+					"images/shuijiao.jpg",
+					"images/default_portrait.jpg",
+					"fonts/mui.ttf",
+					"js/mui.min.js",
+					"css/style.css",
+					"view/consult.html",
+					"js/mui.pullToRefresh.js",
+					"js/mui.pullToRefresh.material.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/mine.html": {
+				"resources": [
+					"css/mui.min.css",
+					"js/mui.min.js",
+					"css/mine.css",
+					"fonts/mui.ttf",
+					"images/headerimg_placeholder.png",
+					"images/bg-head.png",
+					"css/style.css",
+					"images/mine-bg-head.png",
+					"images/tb-fanhui.png",
+					"images/tb-shezhi.png",
+					"images/tb-mine-course.png",
+					"images/tb-xiaoxitongzhi.png",
+					"images/tb-wodeshoucang.png",
+					"images/tb-fenxiangyingyon.png",
+					"images/tb-yijianfankui.png",
+					"js/app.js",
+					"images/icon_edit.png"
+				],
+				"refer": [
+					"view/feedback.html",
+					"view/setting.html",
+					"view/template_back.html",
+					"view/mine_message.html",
+					"view/mine_notice.html",
+					"view/share.html"
+				],
+				"priority": 0
+			},
+			"view/video_live.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"images/icon-zhibo.png",
+					"css/video.css",
+					"images/headerimg_placeholder.png",
+					"images/video-screensave.png",
+					"js/app.js",
+					"js/socket.io.js",
+					"images/bt-share-click.png",
+					"images/tb-weishoucang.png",
+					"view/video_chat.html",
+					"js/share.js",
+					"images/tb-share.png",
+					"images/video_details_01.png",
+					"images/play.png",
+					"images/video_details_02.png",
+					"images/full_screen.png",
+					"images/video_pause.png",
+					"images/video_details_05.png",
+					"images/video_details_06.png",
+					"images/video_details_04.png"
+				],
+				"refer": [
+					"view/login_hub.html",
+					"view/share.html"
+				],
+				"priority": 0
+			},
+			"view/login.html": {
+				"resources": [
+					"css/mui.min.css",
+					"images/bg-head.png",
+					"js/mui.min.js",
+					"fonts/mui.ttf",
+					"css/style.css",
+					"images/icon-mima.png",
+					"images/icon-shouji.png",
+					"js/app.js",
+					"images/tb-fanhui.png"
+				],
+				"refer": [
+					"view/mine.html",
+					"view/index.html",
+					"view/forget_password.html"
+				],
+				"priority": 0
+			},
+			"view/login_hub.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"images/login-hub.png",
+					"images/close.png",
+					"images/eduugo-hub.png",
+					"images/welcome.png",
+					"css/style.css",
+					"js/app.js"
+				],
+				"refer": [
+					"view/login.html",
+					"view/register.html"
+				],
+				"priority": 0
+			},
+			"view/register.html": {
+				"resources": [
+					"images/bg-head.png",
+					"js/mui.min.js",
+					"fonts/mui.ttf",
+					"css/mui.min.css",
+					"css/style.css",
+					"images/icon-shouji.png",
+					"images/icon-mima.png",
+					"images/icon-shouji-in.png",
+					"js/app.js",
+					"images/reg-unselected.png",
+					"images/reg-selected.png",
+					"images/tb-fanhui.png"
+				],
+				"refer": [
+					"view/template_back.html"
+				],
+				"priority": 0
+			},
+			"view/school.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"css/style.css",
+					"images/btn-line-s.png",
+					"images/tb-school-select.png",
+					"images/tb-fanhui-blck.png",
+					"fonts/mui.ttf",
+					"images/headerimg_placeholder.png",
+					"js/app.js"
+				],
+				"refer": [
+					"view/school_detail.html"
+				],
+				"priority": 0
+			},
+			"view/school_detail.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"images/tab-divide.png",
+					"js/Chart.min.js",
+					"images/bg-head.png",
+					"js/app.js",
+					"view/school_detail_base.html",
+					"fonts/mui.ttf",
+					"css/style.css",
+					"images/headerimg_placeholder.png",
+					"images/tb-fanhui.png"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/school_detail_base.html": {
+				"resources": [
+					"js/Chart.min.js",
+					"css/mui.min.css",
+					"js/mui.min.js",
+					"js/app.js",
+					"css/style.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/consult_detail.html": {
+				"resources": [
+					"images/bg-head.png",
+					"js/mui.min.js",
+					"fonts/mui.ttf",
+					"css/mui.min.css",
+					"css/style.css",
+					"js/app.js",
+					"view/aTest.html",
+					"images/tb-fanhui.png"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/video_review.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/video.css",
+					"css/mui.min.css",
+					"images/headerimg_placeholder.png",
+					"fonts/mui.ttf",
+					"images/video-screensave.png",
+					"js/app.js",
+					"view/video_chat.html",
+					"images/tb-weishoucang.png",
+					"images/bt-share-click.png",
+					"js/socket.io.js",
+					"images/tb-yishoucang.png",
+					"js/share.js",
+					"images/tb-share.png",
+					"images/video_details_01.png",
+					"images/play.png",
+					"images/full_screen.png",
+					"images/video_pause.png",
+					"images/video_details_02.png",
+					"images/video_details_06.png",
+					"images/video_details_03.png"
+				],
+				"refer": [
+					"view/share.html",
+					"view/login_hub.html"
+				],
+				"priority": 0
+			},
+			"view/video_chat.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/video.css",
+					"css/mui.min.css",
+					"js/app.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/template_back.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"view/mine_setting.html",
+					"view/mine_notice.html",
+					"view/mine_collection.html",
+					"images/tb-fanhui.png",
+					"js/app.js",
+					"images/bt-share-click2.png",
+					"view/error_network.html",
+					"images/bg-head.png",
+					"css/style.css",
+					"view/special/lingbao.html",
+					"special/lingbao.html",
+					"view/special_lingbao.html"
+				],
+				"refer": [
+					"view/about.html",
+					"view/share.html",
+					"view/login_hub.html"
+				],
+				"priority": 0
+			},
+			"view/aTest.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/feedback.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"js/app.js",
+					"images/tb-fanhui.png"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/mine_setting.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"css/mine.css",
+					"js/app.js"
+				],
+				"refer": [
+					"view/template_back.html"
+				],
+				"priority": 0
+			},
+			"view/about.html": {
+				"resources": [
+					"css/mui.min.css",
+					"images/logo.png",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/mine_message.html": {
+				"resources": [
+					"images/headerimg_placeholder.png",
+					"css/mine_message.css",
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"js/app.js",
+					"view/mine_message.html",
+					"js/mui.poppicker.js",
+					"js/mui.picker.js",
+					"css/mui.poppicker.css",
+					"css/mui.picker.css",
+					"images/tb-fanhui.png"
+				],
+				"refer": [
+					"view/bottom_input.html",
+					"view/login_hub.html"
+				],
+				"priority": 0
+			},
+			"view/bottom_input.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/mine_notice.html": {
+				"resources": [
+					"css/mui.min.css",
+					"js/app.js",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/mine_collection.html": {
+				"resources": [
+					"js/app.js",
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"images/icon-zuobiao.png"
+				],
+				"refer": [
+					"view/video_review.html"
+				],
+				"priority": 0
+			},
+			"view/welcome.html": {
+				"resources": [
+					"images/welcome_photo.png",
+					"js/mui.min.js",
+					"images/welcome_font.png",
+					"css/mui.min.css",
+					"css/style.css",
+					"images/welcome_btn.png",
+					"images/welcome_btn2.png",
+					"js/app.js"
+				],
+				"refer": [
+					"view/index.html"
+				],
+				"priority": 0
+			},
+			"view/share.html": {
+				"resources": [
+					"js/mui.min.js",
+					"images/pyq.png",
+					"css/mui.min.css",
+					"images/weixin.png",
+					"images/qq.png",
+					"js/app.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/video_enroll.html": {
+				"resources": [
+					"js/app.js",
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"images/tb-fanhui.png",
+					"images/bt-share-click2.png",
+					"css/style.css"
+				],
+				"refer": [
+					"view/video_live.html",
+					"view/share.html",
+					"view/login_hub.html"
+				],
+				"priority": 0
+			},
+			"view/forget_password.html": {
+				"resources": [
+					"images/icon-shouji-in.png",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/error_network.html": {
+				"resources": [
+					"images/status_network_anomaly.png",
+					"css/mui.min.css",
+					"images/tb-fanhui.png",
+					"images/bg-head.png",
+					"images/bt-share-click2.png",
+					"css/style.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/special/lingbao.html": {
+				"resources": [
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"view/special_lingbao.html": {
+				"resources": [
+					"css/mui.min.css",
+					"images/bt-share-click2.png",
+					"images/tb-fanhui.png"
+				],
+				"refer": [
+					"view/video_review.html"
+				],
+				"priority": 0
+			},
+			"view/culture.html": {
+				"resources": [
+					"css/mui.min.css",
+					"images/bg-head.png",
+					"images/eduugo.png",
+					"css/style.css",
+					"images/xp_banner@2x.png",
+					"js/app.js",
+					"js/mui.min.js",
+					"images/Bitmap@2x.png"
+				],
+				"refer": [
+					"view/culture_detail.html"
+				],
+				"priority": 0
+			},
+			"view/culture_detail.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"js/app.js",
+					"images/tousu_btn@2x.png",
+					"images/back_btn@2x.png",
+					"images/shoucang_btn@2x.png",
+					"images/chakanquanbu_btn@2x.png",
+					"images/call_btn@2x.png",
+					"images/shoucang_btn_pre@2x.png"
+				],
+				"refer": [],
+				"priority": 0
+			}
+		},
+		"idle": {
+			"resources": [
+				"js/service.js",
+				"libs/easymob-webim-sdk/quickstart.md",
+				"images/user-photo.png",
+				"README.md"
+			]
+		}
+	},
+	"unpackage": [
+	  "README.md",
+	  "images/user-photo.png",
+	  "libs/easymob-webim-sdk/quickstart.md"
+	],
+	"fullscreen": false
+}

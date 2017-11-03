@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav app-bar-top">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">登录</h1>
+		</header>
+		
+		<div class="mui-content login-content">
+			<div class="mui-input-row">
+				<label><img src="../images/icon-shouji.png"></label>
+				<input id="username" class="mui-input-clear" placeholder="请输入手机号或邮箱" type="text">
+			</div>
+			<div class="mui-input-row mui-password">
+				<label><img src="../images/icon-mima.png"></label>
+				<input id="password" class="mui-input-password" placeholder="输入密码，至少6位" data-input-password="3" type="password">
+			</div>
+			<div class="mui-text-left login-fg-password">忘记密码？</div>
+			<div class="mui-button-row">
+				<button id="loginBtn" type="button" class="mui-btn mui-btn-eduugo" onclick="return false;">登录</button>&nbsp;&nbsp;
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			(function($, doc) {
+				$.init();
+				$.plusReady(function(){
+					var hubWs = plus.webview.getWebviewById("login_hub.html");
+					if(hubWs){
+						hubWs.close();
+					}
+					doc.getElementById("loginBtn").addEventListener("tap", function(){
+						var param = {};
+						param.username = doc.getElementById("username").value;
+						param.password = doc.getElementById("password").value;
+						this.setAttribute("disabled", true);
+						app.login(param, function(msg){
+
+							doc.getElementById("loginBtn").removeAttribute("disabled");
+							if(msg){
+								$.alert(msg, ' ', function(){}, 'div');
+								return;
+							}
+							$.toast('登录成功',{ duration:'long', type:'div'});
+							
+//							var launch = plus.webview.getLaunchWebview();
+//							launch.reload(true);
+							
+							var wvs=plus.webview.all();
+							for(var i=0;i<wvs.length;i++){
+								if(wvs[i].id == "sub_video_enroll.html" || wvs[i].id == "index.html" || wvs[i].id == "io.hybrid.ed.v02" || wvs[i].id == "HBuilder" || wvs[i].id == "video.html"){
+									continue;
+								}
+								console.log('webview'+i+': '+wvs[i].id);
+								wvs[i].reload(true);
+							}
+							$.back();
+
+//							launch.show();
+							
+						});
+					});
+					
+					doc.querySelector(".login-fg-password").addEventListener("tap", function(){
+						app.hrefUrl("forget_password.html");
+					});
+					
+				});
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/video.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper video-chat-content">
+		  <div class="mui-scroll">
+		    <ul class="mui-table-view mui-table-view-chevron"></ul>
+		  </div>
+		</div>
+		<template id="chatCell">
+			<div class="mui-card">
+				<div class="mui-card-content">
+					<div class="mui-card-header mui-card-media">
+						<img class="video-header-img" src="../images/headerimg_placeholder.png" />
+						<div class="mui-media-body video-name"></div>
+					</div>
+					<div class="mui-card-content-inner video-text"></div>
+				</div>
+			</div>
+		</template>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			
+			(function($, doc){
+				var self, type;
+				var pageSize = 10;
+				var pageNo = 1;
+				$.init({
+					pullRefresh : {
+					    container:"#pullrefresh",
+					    up : {
+							height:50,
+							auto:true,
+							contentrefresh : "正在加载...",
+							contentnomore:'没有更多数据了',
+							callback :pullfreshFun
+					    }
+					}
+				});
+				$.back = function(){
+					var wv = plus.webview.getWebviewById(self.pWebview.id);
+					wv.evalJS("mui.back();");
+				};
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					type = self.videoType;
+					
+					window.addEventListener("addChat", function(data){
+						var chatDoc = document.querySelector(".video-chat-content");
+						var msgData = [{
+							'comment_id': data.detail.comment_id,
+							'word': data.detail.content,
+							'fuserInfo': {
+								'id': data.detail.uid,
+								'name': data.detail.nickname,
+								'avatar': data.detail.avatar,
+								'role': data.detail.role
+							}
+						}];
+						doc.querySelector(".video-chat-content").insertBefore(createFragment(msgData), chatDoc.firstChild);
+					}, false);
+				});
+				function getChat(id){
+					var url = app.apiHost+"/"+type+"/get-comment";
+					var param = {'id':id, pageNo:pageNo, pageSize:pageSize};
+					$.getJSON(url, param, function(res){
+						if(res.code == 1){
+							var chatDoc = document.querySelector(".video-chat-content");
+							chatDoc.insertBefore(createFragment(res.data.data), chatDoc.lastChild);
+							pageNo++;
+							if(res.data.pageMaxNum >= pageNo){
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+							}else{
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							}
+						}else{
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+						}
+					});
+				}
+				
+				function createFragment(data){
+					var fragment = document.createDocumentFragment();
+					var div;
+					for (var i = 0; i < data.length; i++) {
+						div = document.getElementById("chatCell").content.cloneNode(true);
+						if(data[i].fuserInfo.avatar){
+							div.querySelector(".video-header-img").src = data[i].fuserInfo.avatar;
+						}
+						div.querySelector(".video-name").textContent = data[i].fuserInfo.name+':';
+						div.querySelector(".video-text").textContent = data[i].word;
+						fragment.appendChild(div);
+					}
+					
+					return fragment;
+				}
+				
+				function pullfreshFun(){
+					getChat(self.pWebview.videoId);
+				}
+				
+			}(mui, document));
+			
+		</script>
+	</body>
+
+</html>

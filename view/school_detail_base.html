@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<div class="mui-content school-content-base">
+			<div class="school-block-1">
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">学校性质:<span name="data-pptype"></span></div>
+					<div class="mui-table-cell school-table-bar">学校类型:<span name="data-type"></span></div>
+				</div>
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">U.S榜排名:<span name="data-ranking"></span></div>
+					<div class="mui-table-cell school-table-bar">费用:$<span name="data-cost"></span></div>
+				</div>
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">男女比例:<span name="data-mf-ratio"></span></div>
+				</div>
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">官方网址:<span name="data-official-site"></span></div>
+				</div>
+			</div>
+			<div class="school-block-2">
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">学生比例</div>
+					<div class="mui-table-cell school-table-bar">平局班级容量</div>
+				</div>
+				<div class="mui-table">
+					<div class="mui-table-cell school-student-per">
+						<div class="mui-table international-percentage">
+							<div class="mui-table-cell">国际学生</div>
+							<div class="mui-table-cell mui-text-center"></div>
+							<div class="mui-table-cell school-per"><span class="app-bg-blue"></span></div>
+						</div>
+						<div class="mui-table asian-percentage">
+							<div class="mui-table-cell">亚裔学生</div>
+							<div class="mui-table-cell mui-text-center"></div>
+							<div class="mui-table-cell school-per"><span class="app-bg-yellow"></span></div>
+						</div>
+						<div class="mui-table china-percentage">
+							<div class="mui-table-cell">本地学生</div>
+							<div class="mui-table-cell mui-text-center"></div>
+							<div class="mui-table-cell school-per"><span class="app-bg-red"></span></div>
+						</div>
+					</div>
+					<div class="mui-table-cell school-class-capacity">
+						<canvas id="classChart"></canvas>
+						<div class="school-capacity-panel" >
+							<p class="app-color-blue"></p>
+							<p class="app-color-yellow"></p>
+							<p class="app-color-red"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="school-block-3">
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">学生毕业率<span></span></div>
+				</div>
+				<div class="mui-table mui-text-center">
+					<div class="mui-table-cell">
+						<canvas class="school-finish-1"></canvas>
+						<div class="school-capacity-panel app-color-yellow"></div>
+					</div>
+					<div class="mui-table-cell">
+						<canvas class="school-finish-2"></canvas>
+						<div class="school-capacity-panel app-color-yellow"></div>
+					</div>
+					<div class="mui-table-cell">
+						<canvas class="school-finish-3"></canvas>
+						<div class="school-capacity-panel app-color-yellow"></div>
+					</div>
+				</div>
+			</div>
+			<div class="school-block-4">
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">本科住校比例<span></span></div>
+				</div>
+				<div class="mui-table school-table-hr">
+					<div class="mui-table-cell">
+						学校提供住宿:<span name="data-housing"></span>
+					</div>
+					<div class="mui-table-cell">
+						本科生住校比例:<span name="data-housing-rate"></span>
+					</div>
+				</div>
+				<div class="mui-table">
+					<div class="mui-table-cell mui-text-center">
+						<canvas class="school-in-residence"></canvas>
+						<div class="school-capacity-panel app-color-yellow"></div>
+					</div>
+					<div class="mui-table-cell mui-text-center">
+						<div class="school-table-cell">
+							<h5>大一住宿要求:<span name="live-campus-1"></span></h5>
+							<h5>大二住宿要求:<span name="live-campus-2"></span></h5>
+							<h5>大三住宿要求:<span name="live-campus-3"></span></h5>
+							<h5>大四住宿要求:<span name="live-campus-4"></span></h5>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="school-block-5">
+				<div class="mui-table">
+					<div class="mui-table-cell school-table-bar">费用</div>
+				</div>
+				<div class="mui-table">
+					<p class="school-year"><span class="app-bg-yellow"></span>2017</p>
+					<p class="school-year"><span class="app-bg-blue"></span>2016</p>
+				</div>
+				<div class="mui-table">
+					<canvas class="school-cost"></canvas>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/Chart.min.js"></script>
+		<script type="text/javascript">
+			(function($, doc){
+				var self;
+				$.init();
+				$.plusReady(function(){
+					self = plus.webview.currentWebview();
+					
+					doc.getElementsByName("data-pptype")[0].textContent = self.pptype;
+					doc.getElementsByName("data-type")[0].textContent = self.type;
+					doc.getElementsByName("data-ranking")[0].textContent = self.ranking;
+					doc.getElementsByName("data-cost")[0].textContent = self.total_expensive["2017"];
+					doc.getElementsByName("data-mf-ratio")[0].textContent = " 1:"+(self.gender_distribution_female/self.gender_distribution_male).toFixed(2);
+					doc.getElementsByName("data-official-site")[0].textContent = self.official_site;
+					doc.getElementsByName("data-housing")[0].textContent = self.housing;
+					doc.getElementsByName("data-housing-rate")[0].textContent = self.undergraduates_housing_rate+"%";
+					doc.getElementsByName("live-campus-1")[0].textContent = self.freshmen_live_campus;
+					doc.getElementsByName("live-campus-2")[0].textContent = self.sophomores_live_campus;
+					doc.getElementsByName("live-campus-3")[0].textContent = self.juniors_live_campus;
+					doc.getElementsByName("live-campus-4")[0].textContent = self.seniors_live_campus;
+					doc.querySelector(".international-percentage .mui-text-center").textContent = self.percentage_of_international_student+"%";
+					doc.querySelector(".international-percentage .school-per span").style.width = self.percentage_of_international_student+"%";
+					doc.querySelector(".asian-percentage .mui-text-center").textContent = self.percentage_of_asian_student+"%";
+					doc.querySelector(".asian-percentage .school-per span").style.width = self.percentage_of_asian_student+"%";
+					doc.querySelector(".china-percentage .mui-text-center").textContent = self.percentage_of_china_student+"%";
+					doc.querySelector(".china-percentage .school-per span").style.width = self.percentage_of_china_student+"%";
+				
+					var classData = [
+						{value: self.percentage_classes_one, color:"#71ccf1"},
+						{value : self.percentage_classes_two, color : "#ffc93d"},
+						{value : self.percentage_classes_three, color : "#f85c5d"}			
+					];
+					var classCtx = doc.getElementById("classChart").getContext("2d");
+					new Chart(classCtx).Pie(classData, {segmentShowStroke : false});
+					doc.querySelector(".school-capacity-panel .app-color-blue").textContent = self.percentage_classes_one+"%";
+					doc.querySelector(".school-capacity-panel .app-color-yellow").textContent = self.percentage_classes_two+"%";
+					doc.querySelector(".school-capacity-panel .app-color-red").textContent = self.percentage_classes_three+"%";
+				
+					var finishCtx1 = doc.querySelector(".school-finish-1").getContext("2d");
+					var finishCtx2 = doc.querySelector(".school-finish-2").getContext("2d");
+					var finishCtx3 = doc.querySelector(".school-finish-3").getContext("2d");
+					var finishData1 = [
+						{value: (100-self.graduation_rate_four), color:"#FFEDBB"},
+						{value : self.graduation_rate_four, color : "#ffc93d"}		
+					];
+					var finishData2 = [
+						{value: (100-self.graduation_rate_six), color:"#D3F2FD"},
+						{value : self.graduation_rate_six, color : "#71ccf1"}		
+					];
+					var finishData3 = [
+						{value: (100-self.graduation_rate_asian_six), color:"#FFEDBB"},
+						{value : self.graduation_rate_asian_six, color : "#ffc93d"}		
+					];
+					new Chart(finishCtx1).Doughnut(finishData1, {segmentShowStroke : false, percentageInnerCutout: 80});
+					new Chart(finishCtx2).Doughnut(finishData2, {segmentShowStroke : false, percentageInnerCutout: 80});
+					new Chart(finishCtx3).Doughnut(finishData3, {segmentShowStroke : false, percentageInnerCutout: 80});
+					doc.querySelector(".school-finish-1 ~ .school-capacity-panel").textContent = self.graduation_rate_four+"%";
+					doc.querySelector(".school-finish-2 ~ .school-capacity-panel").textContent = self.graduation_rate_six+"%";
+					doc.querySelector(".school-finish-3 ~ .school-capacity-panel").textContent = self.graduation_rate_asian_six+"%";
+					
+					var housingData = [
+						{value: (100-self.undergraduates_housing_rate), color:"#FFEDBB"},
+						{value : self.undergraduates_housing_rate, color : "#ffc93d"}	
+					]
+					var inCtx = doc.querySelector(".school-in-residence").getContext("2d");
+					new Chart(inCtx).Doughnut(housingData, {segmentShowStroke : false, percentageInnerCutout: 80});
+					doc.querySelector(".school-in-residence ~ .school-capacity-panel").textContent = self.undergraduates_housing_rate+"%";
+				
+					var costData = {
+		            	labels: ["总费用", "学杂费", "书本费", "食宿费", "其他费用"],
+			            datasets: [
+			            	{
+					            label: "2016",
+					            fillColor: "rgb(110,202,242)",
+					            strokeColor: "rgba(110,202,242,0.8)",
+					            data: [self.total_expensive["2016"], self.tuition["2016"], self.books_fee["2016"], self.room_fee["2016"], self.other_total_expensive["2016"]]
+				            },
+				            {
+					            label: "2017",
+					            fillColor: "rgb(255,201,40)",
+					            strokeColor: "rgba(255,201,40,0.8)",
+					            data: [self.total_expensive["2017"], self.tuition["2017"], self.books_fee["2017"], self.room_fee["2017"], self.other_total_expensive["2017"]]
+				            }
+			            ]
+		            };
+					var costCtx = doc.querySelector(".school-cost").getContext("2d");
+					new Chart(costCtx).Bar(costData, {scaleLabel : "<%=value%>($)"});
+				
+				});
+				
+			}(mui, document));
+		</script>
+	</body>
+
+</html>
